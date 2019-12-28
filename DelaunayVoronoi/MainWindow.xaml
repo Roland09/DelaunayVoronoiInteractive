@@ -56,7 +56,7 @@
             </GroupBox>
 
         </Canvas>
-        <Border DockPanel.Dock="Top" Margin="0" BorderBrush="#FF1B1B1B" BorderThickness="0" >
+        <Border x:Name="CanvasBorder" DockPanel.Dock="Top" Margin="0" BorderBrush="#FF1B1B1B" BorderThickness="0" >
             <Canvas x:Name="Graph" Background="White" Margin="0" />
 
         </Border>

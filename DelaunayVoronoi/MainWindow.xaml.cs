@@ -105,7 +105,11 @@ namespace DelaunayVoronoi
         /// </summary>
         private void ClearGraph()
         {
-            this.points = delaunay.GeneratePoints(0, 800, 400);
+            // get width and height from the canvas border, canvas itself doesn't provide that information
+            double width = CanvasBorder.ActualWidth;
+            double height = CanvasBorder.ActualHeight;
+
+            this.points = delaunay.GeneratePoints( 0, width, height);
 
             CreateGraph();
         }
@@ -126,7 +130,11 @@ namespace DelaunayVoronoi
                 pointCount = 0;
             }
 
-            this.points = delaunay.GeneratePoints(pointCount, 800, 400);
+            // get width and height from the canvas border, canvas itself doesn't provide that information
+            double width = CanvasBorder.ActualWidth;
+            double height = CanvasBorder.ActualHeight;
+
+            this.points = delaunay.GeneratePoints(pointCount, width, height);
 
             CreateGraph();
         }
