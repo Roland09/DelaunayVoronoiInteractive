@@ -2,7 +2,7 @@
 
 This repository contains a fork of the work of Rafael Kuebler. I extended it with a little bit of interaction.
 
-What you see in this video is the dependency of Points which are triangulated using Delaunay Triangulation. The dual graph of it can be created, i. e. the Voronoi Diagram.
+Points on the Canvas are triangulated using Delaunay Triangulation. Then the dual graph of it is created, i. e. the Voronoi Diagram.
 
 In order to show how it's all interconnected I added visualization features like
 
@@ -17,13 +17,13 @@ The visualization graphs are
 
 The Points can be placed individually or continuously. The continuous mode recreates the graph on mouse move, so that's rather performance intense.
 
-You can activate the Voronoi Diagram filling either on the currently moved Point or on the entire Diagram.
+You can activate Voronoi Diagram filling either on the currently moved Point or on the entire Diagram.
 
 Convenience functions can be invoked on button click:
 
-* Clear the canvas
+* Clear the Canvas
 * Add a specified number of random Points
-* Add individual patterns like horizontal points, vertical points, diagonal points, cross shaped points, points distributed along circle and ellipse
+* Add individual Points via Patterns like Horizontal, Vertical, Diagonal, Cross, Circle and Ellipse
 
 Here's a quick overview video:
 
