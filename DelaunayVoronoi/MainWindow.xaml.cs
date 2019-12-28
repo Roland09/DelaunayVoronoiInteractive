@@ -58,9 +58,16 @@ namespace DelaunayVoronoi
             // ensure the graph isn't painted outside of the canvas
             Graph.ClipToBounds = true;
 
+            // key event handlers
+            #region keyboard handlers
+            this.KeyDown += KeyboardHandler;
+            #endregion keyboard handlers
+
             // mouse event handlers
+            #region mouse handlers
             Graph.MouseLeftButtonDown += MouseLeftButtonDownHandler; // TODO find out why the click handler doesn't work on mouse move
             Graph.MouseMove += MouseMoveHandler;
+            #endregion mouse handlers
 
             #region checkbox handlers
             // checkbox visualization changes
@@ -89,6 +96,8 @@ namespace DelaunayVoronoi
 
             // create the graph with initial settings
             InitGraph();
+
+
         }
 
         /// <summary>
@@ -651,6 +660,34 @@ namespace DelaunayVoronoi
         {
             ClearGraph();
 
+        }
+
+        /// <summary>
+        /// Custom keyboard event handler
+        /// 
+        ///     + ctrl+enter: toggle fullscreen
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardHandler(object sender, KeyEventArgs e)
+        {
+            // ctrl+enter: toggle fullscreen
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
+            {
+                if (this.WindowState == WindowState.Normal)
+                {
+                    // fullscreen
+                    this.WindowStyle = WindowStyle.None;
+                    this.WindowState = WindowState.Maximized;
+                }
+                else
+                {
+                    this.WindowStyle = WindowStyle.ThreeDBorderWindow;
+                    this.WindowState = WindowState.Normal;
+                }
+
+            }
         }
 
         /// <summary>
