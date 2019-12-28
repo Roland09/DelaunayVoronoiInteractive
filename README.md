@@ -2,7 +2,7 @@
 
 This repository contains a fork of the work of Rafael Kuebler. I extended it with a little bit of interaction.
 
-What you see in this video is the dependency of Points which are triangulated using Delaunay Triangulation and the dual graph of it, which is a Voronoi Diagram.
+What you see in this video is the dependency of Points which are triangulated using Delaunay Triangulation. The dual graph of it can be created, i. e. the Voronoi Diagram.
 
 In order to show how it's all interconnected I added visualization features like
 
