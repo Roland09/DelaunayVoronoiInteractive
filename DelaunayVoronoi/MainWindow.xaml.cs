@@ -74,7 +74,7 @@ namespace InteractiveDelaunayVoronoi
 
             // mouse event handlers
             #region mouse handlers
-            Graph.MouseLeftButtonDown += MouseLeftButtonDownHandler; // TODO find out why the click handler doesn't work on mouse move
+            Graph.MouseLeftButtonDown += MouseLeftButtonDownHandler;
             Graph.MouseMove += MouseMoveHandler;
             #endregion mouse handlers
 
@@ -170,9 +170,8 @@ namespace InteractiveDelaunayVoronoi
         /// <param name="e"></param>
         private void MouseLeftButtonDownHandler(object sender, MouseButtonEventArgs e)
         {
-            // skip if continuous update during mouse move is enabled
-            if (cbContinuousUpdate.IsChecked.GetValueOrDefault())
-                return;
+            // don't let the event be handled in the MouseMoveHandler as well
+            e.Handled = true;
 
             // add point at clicked position
             graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
@@ -205,6 +204,9 @@ namespace InteractiveDelaunayVoronoi
             {
                 if (mousePressedDuringMove)
                 {
+                    // don't let the event be handled in the MouseLeftButtonDownHandler as well
+                    e.Handled = true;
+
                     // add point at clicked position
                     graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
 
@@ -217,6 +219,8 @@ namespace InteractiveDelaunayVoronoi
             }
             #endregion Move Click Handler
 
+            // don't let the event be handled in the MouseLeftButtonDownHandler as well
+            e.Handled = true;
 
             // set last point to mouse move position
             graph.SetLastPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
@@ -224,6 +228,7 @@ namespace InteractiveDelaunayVoronoi
             movementPointIndex = graph.GetLastPointIndex();
 
             CreateGraph();
+                        
         }
 
 
