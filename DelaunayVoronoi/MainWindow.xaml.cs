@@ -1,3 +1,4 @@
+using SutherlandHodgmanAlgorithm;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace DelaunayVoronoi
 {
@@ -25,8 +27,18 @@ namespace DelaunayVoronoi
         private DelaunayTriangulator delaunay = new DelaunayTriangulator();
         private Voronoi voronoi = new Voronoi();
 
-        IEnumerable<Point> points;
+        /// <summary>
+        /// The list of points on the screen. 
+        /// Initialized with empty list to avoid nullpointer exceptions.
+        /// </summary>
+        IEnumerable<Point> points = new List<Point>();
+
         int initialPointCount = 5;
+
+        /// <summary>
+        /// If clip at bounds is active, then this will describe the margin around the canvas that is being used for the clipping.
+        /// </summary>
+        int clipAtBoundsMargin = 50;
 
         bool mousePressedDuringMove = false;
         int movementPointIndex = -1;
@@ -92,12 +104,19 @@ namespace DelaunayVoronoi
             cbDrawVoronoiFillAll.Checked += GraphUpdateHandler;
             cbDrawVoronoiFillAll.Unchecked += GraphUpdateHandler;
 
+            cbClipAtBounds.Checked += GraphUpdateHandler;
+            cbClipAtBounds.Unchecked += GraphUpdateHandler;
+
             #endregion checkbox handlers
 
             // create the graph with initial settings
-            InitGraph();
-
-
+            // delayed initialization because we need to have the UI bounds calculated in order to determine the width and height
+            Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    InitGraph();
+                }
+                )
+                , DispatcherPriority.ContextIdle, null);
         }
 
         /// <summary>
@@ -440,7 +459,7 @@ namespace DelaunayVoronoi
                 var myEllipse = new Ellipse
                 {
                     Stroke = System.Windows.Media.Brushes.LightBlue,
-                    StrokeThickness = 1,
+                    StrokeThickness = 0.6,
                     //Fill = System.Windows.Media.Brushes.AliceBlue,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
@@ -477,7 +496,7 @@ namespace DelaunayVoronoi
                 var line = new Line
                 {
                     Stroke = System.Windows.Media.Brushes.SteelBlue,
-                    StrokeThickness = 1,
+                    StrokeThickness = 0.6,
 
                     X1 = edge.Point1.X,
                     X2 = edge.Point2.X,
@@ -586,17 +605,72 @@ namespace DelaunayVoronoi
         }
 
         /// <summary>
+        /// Convert framework Point to System.Windows.Point struct.
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        private System.Windows.Point[] ToWindowsPoints(List<Point> points)
+        {
+            System.Windows.Point[] windowsPoints = new System.Windows.Point[points.Count];
+            for (int i = 0; i < points.Count; i++)
+            {
+                Point circumCenterPoint = points[i];
+                windowsPoints[i] = new System.Windows.Point(circumCenterPoint.X, circumCenterPoint.Y);
+            }
+
+            return windowsPoints;
+        }
+
+        /// <summary>
+        /// Clip the specified polygon at the canvas bounds. Consider a margin.
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        private System.Windows.Point[] ClipAtBounds(System.Windows.Point[] points)
+        {
+            // ensure there are data
+            if (points.Length == 0)
+                return points;
+
+            // clip polygon, bounding box
+            double left = 0 + clipAtBoundsMargin;
+            double top = 0 + clipAtBoundsMargin;
+            double right = CanvasBorder.ActualWidth - clipAtBoundsMargin;
+            double bottom = CanvasBorder.ActualHeight - clipAtBoundsMargin;
+
+            System.Windows.Point[] clipPolygon = new System.Windows.Point[] { new System.Windows.Point(left, top), new System.Windows.Point(right, top), new System.Windows.Point(right, bottom), new System.Windows.Point(left, bottom) };
+
+            // polygon to be cut
+            System.Windows.Point[] currentPolygon = points;
+
+            System.Windows.Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(currentPolygon, clipPolygon);
+
+            return intersectedPolygon;
+        }
+
+        /// <summary>
         /// Draw the polygon of the given points using the given color
         /// </summary>
         /// <param name="circumCenterPoints"></param>
         /// <param name="color"></param>
         private void DrawPolygon(List<Point> circumCenterPoints, Color color)
         {
-            // draw circumcenter polygon
-            PointCollection pointCollection = new PointCollection();
-            foreach (Point circumCenterPoint in circumCenterPoints)
+            // convert to System.Windows.Point array
+            System.Windows.Point[] currentPolygon = ToWindowsPoints( circumCenterPoints);
+
+            // optionally clip at bounds
+            System.Windows.Point[] intersectedPolygon = currentPolygon;
+
+            if (cbClipAtBounds.IsChecked.GetValueOrDefault())
             {
-                pointCollection.Add(new System.Windows.Point(circumCenterPoint.X, circumCenterPoint.Y));
+                intersectedPolygon = ClipAtBounds(currentPolygon);
+            }
+
+            // convert to point collection
+            PointCollection pointCollection = new PointCollection();
+            foreach (System.Windows.Point point in intersectedPolygon)
+            {
+                pointCollection.Add(point);
             }
 
             SolidColorBrush strokeBrush = new SolidColorBrush(color);

@@ -24,9 +24,10 @@
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Voronoi Fill" Height="80" Canvas.Left="240" Width="110">
-                <StackPanel Height="55" VerticalAlignment="Top" Margin="0,0,-22,0" Width="110" HorizontalAlignment="Left">
+                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-40,0" Width="110" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawVoronoiFillAll" Content="Fill All" IsChecked="True" Margin="4,4,0,0"/>
                     <CheckBox x:Name="cbDrawVoronoiFillCurrent" Content="Fill Current" IsChecked="True" Margin="4,4,0,0"/>
+                    <CheckBox x:Name="cbClipAtBounds" Content="Clip Bounds" Margin="4,4,0,0"/>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Interaction" Height="80" Canvas.Left="350" Width="100">

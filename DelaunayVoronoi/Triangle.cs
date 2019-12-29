@@ -78,8 +78,11 @@ namespace DelaunayVoronoi
             
             if (div == 0)
             {
-                Debug.WriteLine($"({p0.X}, {p0.Y}), ({p1.X}, {p1.Y}), ({p2.X}, {p2.Y})");
-                throw new System.Exception();
+                Debug.WriteLine("Div is 0: " + $"({p0.X}, {p0.Y}), ({p1.X}, {p1.Y}), ({p2.X}, {p2.Y})");
+
+                // TODO modified: can't have the app crashing
+                //throw new System.Exception();
+                div = 1;
             }
 
             var center = new Point(aux1 / div, aux2 / div);

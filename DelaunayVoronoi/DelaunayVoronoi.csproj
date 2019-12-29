@@ -58,6 +58,7 @@
     <Compile Include="ClockwiseComparer.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="SutherlandHodgman.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Voronoi.cs" />
     <Page Include="MainWindow.xaml">
