@@ -95,6 +95,9 @@ namespace InteractiveDelaunayVoronoi
             cbDrawVoronoi.Checked += GraphUpdateHandler;
             cbDrawVoronoi.Unchecked += GraphUpdateHandler;
 
+            cbDrawClipVoronoi.Checked += GraphUpdateHandler;
+            cbDrawClipVoronoi.Unchecked += GraphUpdateHandler;
+
             cbDrawVoronoiFillCurrent.Checked += GraphUpdateHandler;
             cbDrawVoronoiFillCurrent.Unchecked += GraphUpdateHandler;
 
@@ -105,6 +108,10 @@ namespace InteractiveDelaunayVoronoi
             cbClipAtBounds.Unchecked += GraphUpdateHandler;
 
             #endregion checkbox handlers
+
+            // disable the voronoi clip drawing, it's only for testing purposes for the GetAllClippedVoronoiPolygons method
+            // needs some adjustment, eg dynamically adding points doesn't work when it is activated
+            cbDrawClipVoronoi.IsEnabled = false;
 
             // create the graph with initial settings
             // delayed initialization because we need to have the UI bounds calculated in order to determine the width and height
@@ -347,6 +354,12 @@ namespace InteractiveDelaunayVoronoi
                 DrawVoronoi(voronoiEdges);
 
             }
+
+            if (cbDrawClipVoronoi.IsChecked.GetValueOrDefault())
+            {
+                DrawAllClippedPolygons();
+            }
+
             #endregion visualization
 
         }
@@ -573,10 +586,13 @@ namespace InteractiveDelaunayVoronoi
         }
 
         /// <summary>
-        /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
+        /// Get a list of all polygons per point. 
+        /// This contains duplicate edges if multiple points share the same edge.
+        /// The polygons are clipped at the canvas bounds.
+        /// Basically this is the method to use. It gives you all Voronoi polygons exactly on the Canvas
         /// </summary>
         /// <returns></returns>
-        private List<Point[]> GetAllVoronoiPolygons()
+        private List<Point[]> GetAllClippedVoronoiPolygons()
         {
             // bounding box
             Point[] clipPolygon = GetClipPolygon(clipAtBoundsMargin);
@@ -590,6 +606,53 @@ namespace InteractiveDelaunayVoronoi
             }          
 
             return allVoronoiPolygons;
+        }
+
+        /// <summary>
+        /// Draw all Voronoi polygons. This overlaps the Voronoi drawing, so it's better to have either this or the normal voronoi drawing.
+        /// </summary>
+        private void DrawAllClippedPolygons()
+        {
+            List<Point[]> allPolygons = GetAllClippedVoronoiPolygons();
+
+            for (int i = 0; i < allPolygons.Count; i++)
+            {
+                // get clipped voronoi polygon
+                Point[] voronoiPolygon = allPolygons[i];
+
+                // draw point
+                SolidColorBrush pointBrush = new SolidColorBrush( Colors.Yellow);
+                foreach (Point point in voronoiPolygon)
+                {
+                    DrawPoint(point, pointBrush);
+                }
+
+                // draw polygon
+
+                // convert to point collection
+                PointCollection pointCollection = new PointCollection();
+                foreach (Point point in voronoiPolygon)
+                {
+                    pointCollection.Add(point);
+                }
+
+                // fill polygon
+                Color color = GetRandomColor(i);
+
+                SolidColorBrush strokeBrush = new SolidColorBrush(color);
+                SolidColorBrush fillBrush = new SolidColorBrush(color);
+                fillBrush.Opacity = 0.4f;
+
+                var polygon = new Polygon
+                {
+                    //Stroke = strokeBrush,
+                    Fill = fillBrush,
+                    StrokeThickness = 2,
+                    Points = pointCollection
+                };
+                
+                Graph.Children.Add(polygon);
+            }
         }
 
         /// <summary>

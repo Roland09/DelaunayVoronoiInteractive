@@ -18,9 +18,10 @@
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Graph" Height="80" Canvas.Left="125" Width="110">
-                <StackPanel Height="55" VerticalAlignment="Top" Margin="0,0,-22,0" Width="110" HorizontalAlignment="Left">
+                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-22,0" Width="110" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawDelaunay" Content="Delaunay" IsChecked="True" Margin="4,4,0,0"  />
                     <CheckBox x:Name="cbDrawVoronoi" Content="Voronoi" IsChecked="True" Margin="4,4,0,0"  />
+                    <CheckBox x:Name="cbDrawClipVoronoi" Content="Clip Voronoi" IsChecked="False" Margin="4,4,0,0"  />
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Voronoi Fill" Height="80" Canvas.Left="240" Width="110">
