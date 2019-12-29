@@ -1,7 +1,7 @@
+using DelaunayVoronoi;
 using SutherlandHodgmanAlgorithm;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,8 +9,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Point = System.Windows.Point;
+using Edge = InteractiveDelaunayVoronoi.Edge;
 
-namespace DelaunayVoronoi
+
+namespace InteractiveDelaunayVoronoi
 {
     /// <summary>
     /// Interactively add points, perform Delaunay Triangulation and create a Voronoi Diagram.
@@ -24,14 +27,8 @@ namespace DelaunayVoronoi
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DelaunayTriangulator delaunay = new DelaunayTriangulator();
-        private Voronoi voronoi = new Voronoi();
 
-        /// <summary>
-        /// The list of points on the screen. 
-        /// Initialized with empty list to avoid nullpointer exceptions.
-        /// </summary>
-        IEnumerable<Point> points = new List<Point>();
+        private DelaunayVoronoiGraph graph = new DelaunayVoronoiGraph();
 
         int initialPointCount = 5;
 
@@ -128,7 +125,7 @@ namespace DelaunayVoronoi
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
-            this.points = delaunay.GeneratePoints( 0, width, height);
+            this.graph.GeneratePoints( 0, width, height);
 
             CreateGraph();
         }
@@ -153,7 +150,7 @@ namespace DelaunayVoronoi
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
-            this.points = delaunay.GeneratePoints(pointCount, width, height);
+            this.graph.GeneratePoints(pointCount, width, height);
 
             CreateGraph();
         }
@@ -170,11 +167,8 @@ namespace DelaunayVoronoi
             if (cbContinuousUpdate.IsChecked.GetValueOrDefault())
                 return;
 
-            // get clicked position
-            Point point = new Point(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
-
-            // add new point to points list
-            ((List<Point>)points).Add(point);
+            // add point at clicked position
+            graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
 
             CreateGraph();
         }
@@ -199,15 +193,13 @@ namespace DelaunayVoronoi
             {
                 mousePressedDuringMove = true;
             }
+
             if (e.LeftButton == MouseButtonState.Released)
             {
                 if (mousePressedDuringMove)
                 {
-                    // get clicked position
-                    Point newPoint = new Point(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
-
-                    // add new point to points list
-                    ((List<Point>)points).Add(newPoint);
+                    // add point at clicked position
+                    graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
 
                     CreateGraph();
 
@@ -219,16 +211,10 @@ namespace DelaunayVoronoi
             #endregion Move Click Handler
 
 
-            // get clicked position
-            Point point = new Point(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
+            // set last point to mouse move position
+            graph.SetLastPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
 
-            // add new point to points list
-            int count = ((List<Point>)points).Count;
-            if (count > 2)
-            {
-                movementPointIndex = count - 1;
-                ((List<Point>)points)[movementPointIndex] = point;
-            }
+            movementPointIndex = graph.GetLastPointIndex();
 
             CreateGraph();
         }
@@ -246,8 +232,7 @@ namespace DelaunayVoronoi
 
                     for (int i = 0; i < 20; i++)
                     {
-                        Point point = new Point(100 + i * 30, 100);
-                        ((List<Point>)points).Add(point);
+                        graph.AddPoint(100 + i * 30, 100);
                     }
                     break;
 
@@ -255,26 +240,25 @@ namespace DelaunayVoronoi
 
                     for (int i = 0; i < 20; i++)
                     {
-                        Point point = new Point(100, 100 + i * 30);
-                        ((List<Point>)points).Add(point);
+                        graph.AddPoint(100, 100 + i * 30);
+
                     }
                     break;
 
                 case FillPattern.Diagonal:
                     for (int i = 0; i < 20; i++)
                     {
-                        Point point = new Point(100 + i * 30, 100 + i * 30);
-                        ((List<Point>)points).Add(point);
+                        graph.AddPoint(100 + i * 30, 100 + i * 30);
                     }
                     break;
 
                 case FillPattern.Cross:
 
-                    ((List<Point>)points).Add(new Point(200, 100));
-                    ((List<Point>)points).Add(new Point(200, 200));
-                    ((List<Point>)points).Add(new Point(200, 300));
-                    ((List<Point>)points).Add(new Point(100, 200));
-                    ((List<Point>)points).Add(new Point(300, 200));
+                    graph.AddPoint(200, 100);
+                    graph.AddPoint(200, 200);
+                    graph.AddPoint(200, 300);
+                    graph.AddPoint(100, 200);
+                    graph.AddPoint(300, 200);
 
                     break;
 
@@ -288,9 +272,8 @@ namespace DelaunayVoronoi
                         int x = (int)(Math.Cos(Math.PI / 180 * i) * radius);
                         int y = (int)(Math.Sin(Math.PI / 180 * i) * radius);
 
-                        Point point = new Point(400 + x, 150 + y);
-                        ((List<Point>)points).Add(point);
-                    }
+                        graph.AddPoint(400 + x, 150 + y);
+                                            }
                     break;
 
                 case FillPattern.Ellipse:
@@ -305,25 +288,10 @@ namespace DelaunayVoronoi
                         int x = (int)(Math.Cos(Math.PI / 180 * i) * radiusX);
                         int y = (int)(Math.Sin(Math.PI / 180 * i) * radiusY);
 
-                        Point point = new Point(400 + x, 200 + y);
-                        ((List<Point>)points).Add(point);
+                        graph.AddPoint( 400 + x, 200 + y);
                     }
                     break;
             }
-        }
-
-        /// <summary>
-        /// Clear any calculated data out of the points list so that we can recreate the graph using the same points
-        /// </summary>
-        private void ResetData()
-        {
-
-            foreach (Point point in points)
-            {
-                point.AdjacentTriangles.Clear();
-
-            }
-
         }
 
         /// <summary>
@@ -331,25 +299,14 @@ namespace DelaunayVoronoi
         /// </summary>
         private void CreateGraph()
         {
-            // null-check required because of checkbox events during startup
-            if (points == null)
-                return;
 
             // clear the canvas
             Graph.Children.Clear();
 
-            // reset data
-            ResetData();
+            graph.CreateGraph();
 
-            // delaunay
-            var delaunayTimer = Stopwatch.StartNew();
-            var triangulation = delaunay.BowyerWatson(points);
-            delaunayTimer.Stop();
-
-            // voronoi
-            var voronoiTimer = Stopwatch.StartNew();
-            var vornoiEdges = voronoi.GenerateEdgesFromDelaunay(triangulation);
-            voronoiTimer.Stop();
+            List<InteractiveDelaunayVoronoi.Triangle> triangulation = graph.GetDelaunayTriangles();
+            List<InteractiveDelaunayVoronoi.Edge> voronoiEdges = graph.GetVoronoiEdges();
 
             #region visualization
 
@@ -361,13 +318,13 @@ namespace DelaunayVoronoi
 
             if (cbDrawPoints.IsChecked.GetValueOrDefault())
             {
-                DrawPoints(points);
+                DrawPoints( graph.GetPoints());
 
             }
 
             if (cbDrawCircumCenters.IsChecked.GetValueOrDefault())
             {
-                DrawCircumCenters(triangulation);
+                DrawCircumCenters(graph.GetCircumCenterPoints());
             }
 
             if (cbDrawCircumCircles.IsChecked.GetValueOrDefault())
@@ -387,7 +344,7 @@ namespace DelaunayVoronoi
 
             if (cbDrawVoronoi.IsChecked.GetValueOrDefault())
             {
-                DrawVoronoi(vornoiEdges);
+                DrawVoronoi(voronoiEdges);
 
             }
             #endregion visualization
@@ -398,7 +355,7 @@ namespace DelaunayVoronoi
         /// Draw the point list
         /// </summary>
         /// <param name="points"></param>
-        private void DrawPoints(IEnumerable<Point> points)
+        private void DrawPoints(IEnumerable<System.Windows.Point> points)
         {
             foreach (var point in points)
             {
@@ -423,9 +380,9 @@ namespace DelaunayVoronoi
         /// Draw the circumcenter points of the triangulation
         /// </summary>
         /// <param name="triangulation"></param>
-        private void DrawCircumCenters(IEnumerable<Triangle> triangulation)
+        private void DrawCircumCenters(IEnumerable<Point> circumCenters)
         {
-            foreach (var triangle in triangulation)
+            foreach (var point in circumCenters)
             {
                 var myEllipse = new Ellipse
                 {
@@ -438,8 +395,8 @@ namespace DelaunayVoronoi
                     Height = 10
                 };
 
-                var ellipseX = triangle.Circumcenter.X - myEllipse.Height * 0.5;
-                var ellipseY = triangle.Circumcenter.Y - myEllipse.Width * 0.5;
+                var ellipseX = point.X - myEllipse.Height * 0.5;
+                var ellipseY = point.Y - myEllipse.Width * 0.5;
 
                 myEllipse.Margin = new Thickness(ellipseX, ellipseY, 0, 0);
 
@@ -467,8 +424,8 @@ namespace DelaunayVoronoi
                     Height = System.Math.Sqrt(triangle.RadiusSquared) * 2
                 };
 
-                var ellipseX = triangle.Circumcenter.X - myEllipse.Height * 0.5;
-                var ellipseY = triangle.Circumcenter.Y - myEllipse.Width * 0.5;
+                var ellipseX = triangle.CircumCenter.X - myEllipse.Height * 0.5;
+                var ellipseY = triangle.CircumCenter.Y - myEllipse.Width * 0.5;
 
                 myEllipse.Margin = new Thickness(ellipseX, ellipseY, 0, 0);
 
@@ -532,39 +489,16 @@ namespace DelaunayVoronoi
         }
 
         /// <summary>
-        /// Get the circumcenter points for the given point in a clocwise order
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
-        private List<Point> GetCircumCenterPoints(Point point)
-        {
-            List<Point> circumCenterPoints = new List<Point>();
-
-            foreach (Triangle triangle in point.AdjacentTriangles)
-            {
-                Point circumCenterPoint = new Point(triangle.Circumcenter.X, triangle.Circumcenter.Y);
-                circumCenterPoints.Add(circumCenterPoint);
-
-            }
-
-            // ensure the points are in clockwise order
-            circumCenterPoints.Sort(new ClockwiseComparer(point));
-
-            return circumCenterPoints;
-        }
-
-        /// <summary>
         /// Fill the voronoi section of the current point during move interaction
         /// </summary>
         private void DrawVoronoiFillCurrent()
         {
             // ensure it's the last one
-            if (movementPointIndex < 0 || movementPointIndex != ((List<Point>)points).Count - 1)
+            if (movementPointIndex < 0 || movementPointIndex != graph.GetLastPointIndex())
                 return;
 
-            Point point = ((List<Point>)points)[movementPointIndex];
-
-            List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+            Point point = graph.GetPoint(movementPointIndex);
+            List<Point> circumCenterPoints = graph.GetCircumCenterPoints(movementPointIndex);
 
             foreach (Point circumCenterPoint in circumCenterPoints)
             {
@@ -588,15 +522,13 @@ namespace DelaunayVoronoi
         /// </summary>
         private void DrawVoronoiFillAll()
         {
-            int index = -1;
-            foreach (Point point in points)
-            {
-                index++;
 
-                List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+            for( int i=0; i < graph.GetPoints().Count; i++)
+            {
+                List<Point> circumCenterPoints = graph.GetCircumCenterPoints( i);
 
                 // fill polygon
-                Color color = GetRandomColor(index);
+                Color color = GetRandomColor(i);
 
                 DrawPolygon(circumCenterPoints, color);
 

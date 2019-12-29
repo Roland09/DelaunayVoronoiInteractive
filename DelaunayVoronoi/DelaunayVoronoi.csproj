@@ -55,12 +55,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ClockwiseComparer.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="DelaunayVoronoiGraph.cs" />
     <Compile Include="Edge.cs" />
-    <Compile Include="SutherlandHodgman.cs" />
+    <Compile Include="MathUtils\ClockwiseComparer.cs" />
+    <Compile Include="DelaunayVoronoi\Point.cs" />
+    <Compile Include="DelaunayVoronoi\Edge.cs" />
+    <Compile Include="SutherlandHodgman\SutherlandHodgman.cs" />
+    <Compile Include="DelaunayVoronoi\Triangle.cs" />
+    <Compile Include="DelaunayVoronoi\Voronoi.cs" />
     <Compile Include="Triangle.cs" />
-    <Compile Include="Voronoi.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -69,7 +72,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Delaunay.cs" />
+    <Compile Include="DelaunayVoronoi\Delaunay.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
