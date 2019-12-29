@@ -141,6 +141,11 @@ namespace DelaunayVoronoi
             }).ToList();
         }
 
+        private System.Windows.Point ToWindowsPoint( Point point)
+        {
+            return new System.Windows.Point(point.X, point.Y);
+        }
+
         public List<InteractiveDelaunayVoronoi.Triangle> GetDelaunayTriangles()
         {
             return triangulation.Select(item => new InteractiveDelaunayVoronoi.Triangle( //
@@ -159,6 +164,30 @@ namespace DelaunayVoronoi
                 new System.Windows.Point( item.Point1.X, item.Point1.Y), //
                 new System.Windows.Point(item.Point2.X, item.Point2.Y)) //
             ).ToList();
+        }
+
+        /// <summary>
+        /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
+        /// </summary>
+        /// <returns></returns>
+        public List<System.Windows.Point[]> GetAllVoronoiPolygons()
+        {
+            List<System.Windows.Point[]> allPolygons = new List<System.Windows.Point[]>();
+
+            foreach ( Point point in points)
+            {
+                List<System.Windows.Point> currentPolygon = new List<System.Windows.Point>();
+
+                List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+                foreach (Point circumCenterPoint in circumCenterPoints)
+                {
+                    currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
+                }
+
+                allPolygons.Add(currentPolygon.ToArray());
+            }
+
+            return allPolygons;
         }
     }
 }

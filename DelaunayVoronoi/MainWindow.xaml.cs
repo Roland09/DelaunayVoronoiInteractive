@@ -355,7 +355,7 @@ namespace InteractiveDelaunayVoronoi
         /// Draw the point list
         /// </summary>
         /// <param name="points"></param>
-        private void DrawPoints(IEnumerable<System.Windows.Point> points)
+        private void DrawPoints(IEnumerable<Point> points)
         {
             foreach (var point in points)
             {
@@ -537,20 +537,20 @@ namespace InteractiveDelaunayVoronoi
         }
 
         /// <summary>
-        /// Convert framework Point to System.Windows.Point struct.
+        /// Create a polygon which consists of the bounding box plus a margin
         /// </summary>
-        /// <param name="points"></param>
         /// <returns></returns>
-        private System.Windows.Point[] ToWindowsPoints(List<Point> points)
+        private Point[] GetClipPolygon( double margin)
         {
-            System.Windows.Point[] windowsPoints = new System.Windows.Point[points.Count];
-            for (int i = 0; i < points.Count; i++)
-            {
-                Point circumCenterPoint = points[i];
-                windowsPoints[i] = new System.Windows.Point(circumCenterPoint.X, circumCenterPoint.Y);
-            }
+            // clip polygon, bounding box
+            double left = 0 + margin;
+            double top = 0 + margin;
+            double right = CanvasBorder.ActualWidth - margin;
+            double bottom = CanvasBorder.ActualHeight - margin;
 
-            return windowsPoints;
+            Point[] clipPolygon = new Point[] { new Point(left, top), new Point(right, top), new Point(right, bottom), new Point(left, bottom) };
+
+            return clipPolygon;
         }
 
         /// <summary>
@@ -558,26 +558,38 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        private System.Windows.Point[] ClipAtBounds(System.Windows.Point[] points)
+        private Point[] ClipAtBounds(Point[] currentPolygon)
         {
             // ensure there are data
-            if (points.Length == 0)
-                return points;
+            if (currentPolygon.Length == 0)
+                return currentPolygon;
 
             // clip polygon, bounding box
-            double left = 0 + clipAtBoundsMargin;
-            double top = 0 + clipAtBoundsMargin;
-            double right = CanvasBorder.ActualWidth - clipAtBoundsMargin;
-            double bottom = CanvasBorder.ActualHeight - clipAtBoundsMargin;
+            Point[] clipPolygon = GetClipPolygon( clipAtBoundsMargin);
 
-            System.Windows.Point[] clipPolygon = new System.Windows.Point[] { new System.Windows.Point(left, top), new System.Windows.Point(right, top), new System.Windows.Point(right, bottom), new System.Windows.Point(left, bottom) };
-
-            // polygon to be cut
-            System.Windows.Point[] currentPolygon = points;
-
-            System.Windows.Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(currentPolygon, clipPolygon);
+            Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(currentPolygon, clipPolygon);
 
             return intersectedPolygon;
+        }
+
+        /// <summary>
+        /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
+        /// </summary>
+        /// <returns></returns>
+        private List<Point[]> GetAllVoronoiPolygons()
+        {
+            // bounding box
+            Point[] clipPolygon = GetClipPolygon(clipAtBoundsMargin);
+
+            List<Point[]> allVoronoiPolygons = new List<Point[]>();
+
+            foreach(Point[]  polygon in graph.GetAllVoronoiPolygons())
+            {
+                Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(polygon, clipPolygon);
+                allVoronoiPolygons.Add(intersectedPolygon);
+            }          
+
+            return allVoronoiPolygons;
         }
 
         /// <summary>
@@ -588,19 +600,24 @@ namespace InteractiveDelaunayVoronoi
         private void DrawPolygon(List<Point> circumCenterPoints, Color color)
         {
             // convert to System.Windows.Point array
-            System.Windows.Point[] currentPolygon = ToWindowsPoints( circumCenterPoints);
+            Point[] currentPolygon = circumCenterPoints.ToArray();
+
+            Point[] intersectedPolygon;
 
             // optionally clip at bounds
-            System.Windows.Point[] intersectedPolygon = currentPolygon;
-
             if (cbClipAtBounds.IsChecked.GetValueOrDefault())
             {
                 intersectedPolygon = ClipAtBounds(currentPolygon);
             }
+            // othrwise keep the polygon as it is with vertices outside the canvas
+            else
+            {
+                intersectedPolygon = currentPolygon;
+            }
 
             // convert to point collection
             PointCollection pointCollection = new PointCollection();
-            foreach (System.Windows.Point point in intersectedPolygon)
+            foreach (Point point in intersectedPolygon)
             {
                 pointCollection.Add(point);
             }
