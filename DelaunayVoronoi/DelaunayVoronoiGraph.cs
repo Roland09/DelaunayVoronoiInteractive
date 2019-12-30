@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InteractiveDelaunayVoronoi;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -188,6 +189,34 @@ namespace DelaunayVoronoi
             }
 
             return allPolygons;
+        }
+
+        /// <summary>
+        /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
+        /// </summary>
+        /// <returns></returns>
+        public List<Cell> GetAllVoronoiCells()
+        {
+            List<Cell> allCells = new List<Cell>();
+
+            foreach (Point point in points)
+            {
+                List<System.Windows.Point> currentPolygon = new List<System.Windows.Point>();
+
+                List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+
+                foreach (Point circumCenterPoint in circumCenterPoints)
+                {
+                    currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
+                }
+
+                // create the cell including polygons and center point
+                Cell cell = new Cell(currentPolygon.ToArray(), ToWindowsPoint( point));
+
+                allCells.Add( cell);
+            }
+
+            return allCells;
         }
     }
 }
