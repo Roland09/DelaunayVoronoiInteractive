@@ -36,6 +36,31 @@ namespace DelaunayVoronoi
             m_Origin = origin;
         }
 
+        /// <summary>
+        /// 	Initializes a new instance of the ClockwiseComparer class and sets the origin to the mean vector, depending on the positions.
+        /// </summary>
+        /// <param name="origin">Origin.</param>
+        public ClockwiseComparer(List<Point> positions)
+        {
+            m_Origin = GetMeanVector(positions);
+        }
+
+        private Point GetMeanVector(List<Point> positions)
+        {
+            if (positions.Count == 0)
+                return new Point(0,0);
+
+            double x = 0f;
+            double y = 0f;
+
+            foreach (Point pos in positions)
+            {
+                x += pos.X;
+                y += pos.Y;
+            }
+            return new Point(x / (double)positions.Count, y / (double)positions.Count);
+        }
+
         #region IComparer Methods
 
         /// <summary>
