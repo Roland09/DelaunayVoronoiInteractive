@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Cell.cs" />
     <Compile Include="DelaunayVoronoiGraph.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="MathUtils\ClockwiseComparer.cs" />

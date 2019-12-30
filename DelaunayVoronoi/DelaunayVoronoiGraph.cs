@@ -1,4 +1,5 @@
 ﻿using InteractiveDelaunayVoronoi;
+using SutherlandHodgmanAlgorithm;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -191,11 +192,22 @@ namespace DelaunayVoronoi
             return allPolygons;
         }
 
+
         /// <summary>
         /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
         /// </summary>
         /// <returns></returns>
         public List<Cell> GetAllVoronoiCells()
+        {
+            return GetAllVoronoiCells(null);
+        }
+
+        /// <summary>
+        /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
+        /// Optionally clip the points at the specified polygon.
+        /// </summary>
+        /// <returns></returns>
+        public List<Cell> GetAllVoronoiCells(System.Windows.Point[] clipPolygon)
         {
             List<Cell> allCells = new List<Cell>();
 
@@ -210,8 +222,19 @@ namespace DelaunayVoronoi
                     currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
                 }
 
-                // create the cell including polygons and center point
-                Cell cell = new Cell(currentPolygon.ToArray(), ToWindowsPoint( point));
+                Cell cell;
+
+                if (clipPolygon != null)
+                {
+                    cell = new Cell(currentPolygon.ToArray(), ToWindowsPoint(point));
+                }
+                else
+                {
+                    System.Windows.Point[] clippedPoints = SutherlandHodgman.GetIntersectedPolygon(currentPolygon.ToArray(), clipPolygon);
+
+                    // create the cell including polygons and center point
+                    cell = new Cell(clippedPoints, ToWindowsPoint(point));
+                }
 
                 allCells.Add( cell);
             }
