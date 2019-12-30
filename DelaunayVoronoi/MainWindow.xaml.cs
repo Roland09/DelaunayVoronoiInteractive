@@ -132,9 +132,7 @@ namespace InteractiveDelaunayVoronoi
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
-            this.graph.GeneratePoints( 0, width, height);
-
-            CreateGraph();
+            CreateGraph(0, width, height);
         }
 
         /// <summary>
@@ -157,9 +155,7 @@ namespace InteractiveDelaunayVoronoi
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
-            this.graph.GeneratePoints(pointCount, width, height);
-
-            CreateGraph();
+            CreateGraph(pointCount, width, height);
         }
 
  
@@ -304,6 +300,14 @@ namespace InteractiveDelaunayVoronoi
                     }
                     break;
             }
+        }
+
+        public void CreateGraph(int amount, double maxX, double maxY)
+        {
+            graph.GeneratePoints(amount, maxX, maxY);
+
+            CreateGraph();
+
         }
 
         /// <summary>
