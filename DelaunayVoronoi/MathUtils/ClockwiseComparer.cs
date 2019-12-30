@@ -8,7 +8,7 @@ namespace DelaunayVoronoi
     /// 
     /// Note: Found this online in several repositories, full credit to the person who created it, unfortunately couldn't find the original author.
     /// </summary>
-    internal class ClockwiseComparer : IComparer<Point>
+    public class ClockwiseComparer : IComparer<Point>
     {
         /// <summary>
         /// 	ClockwiseComparer provides functionality for sorting a collection of Points such
