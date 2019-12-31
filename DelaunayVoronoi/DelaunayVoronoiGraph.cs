@@ -120,27 +120,19 @@ namespace DelaunayVoronoi
 
         public List<System.Windows.Point> GetCircumCenterPoints()
         {
-            return triangulation.Select(item => new System.Windows.Point()
-            {
-                X = item.Circumcenter.X,
-                Y = item.Circumcenter.Y
-            }).ToList();
+            return triangulation.Select(item => ToWindowsPoint( item.Circumcenter)).ToList();
         }
 
         public System.Windows.Point GetPoint( int index)
         {
             Point point = ((List<Point>)points)[index];
 
-            return new System.Windows.Point(point.X, point.Y);
+            return ToWindowsPoint( point);
         }
 
         private List<System.Windows.Point> ToWindowsPoints(IEnumerable<Point> points)
         {
-            return points.Select(item => new System.Windows.Point()
-            {
-                X = item.X,
-                Y = item.Y,
-            }).ToList();
+            return points.Select(item => ToWindowsPoint( item)).ToList();
         }
 
         private System.Windows.Point ToWindowsPoint( Point point)
@@ -151,10 +143,10 @@ namespace DelaunayVoronoi
         public List<InteractiveDelaunayVoronoi.Triangle> GetDelaunayTriangles()
         {
             return triangulation.Select(item => new InteractiveDelaunayVoronoi.Triangle( //
-                new System.Windows.Point(item.Vertices[0].X, item.Vertices[0].Y), //
-                new System.Windows.Point(item.Vertices[1].X, item.Vertices[1].Y), //
-                new System.Windows.Point(item.Vertices[2].X, item.Vertices[2].Y), //
-                new System.Windows.Point(item.Circumcenter.X, item.Circumcenter.Y), //
+                ToWindowsPoint(item.Vertices[0]), //
+                ToWindowsPoint(item.Vertices[1]), //
+                ToWindowsPoint(item.Vertices[2]), //
+                ToWindowsPoint(item.Circumcenter), //
                 item.RadiusSquared //
                 )
             ).ToList();
@@ -163,8 +155,8 @@ namespace DelaunayVoronoi
         public List<InteractiveDelaunayVoronoi.Edge> GetVoronoiEdges()
         {
             return vornoiEdges.Select(item => new InteractiveDelaunayVoronoi.Edge( //
-                new System.Windows.Point( item.Point1.X, item.Point1.Y), //
-                new System.Windows.Point(item.Point2.X, item.Point2.Y)) //
+                ToWindowsPoint( item.Point1), //
+                ToWindowsPoint( item.Point2)) //
             ).ToList();
         }
 
