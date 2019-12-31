@@ -58,7 +58,7 @@
     <Compile Include="Cell.cs" />
     <Compile Include="DelaunayVoronoiGraph.cs" />
     <Compile Include="Edge.cs" />
-    <Compile Include="MathUtils\ClockwiseComparer.cs" />
+    <Compile Include="VectorUtils\ClockwiseComparer.cs" />
     <Compile Include="DelaunayVoronoi\Point.cs" />
     <Compile Include="DelaunayVoronoi\Edge.cs" />
     <Compile Include="SutherlandHodgman\SutherlandHodgman.cs" />
