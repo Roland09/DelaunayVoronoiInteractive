@@ -216,7 +216,7 @@ namespace DelaunayVoronoi
 
                 Cell cell;
 
-                if (clipPolygon != null)
+                if (clipPolygon == null)
                 {
                     cell = new Cell(currentPolygon.ToArray(), ToWindowsPoint(point));
                 }
