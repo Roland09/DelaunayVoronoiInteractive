@@ -627,7 +627,7 @@ namespace InteractiveDelaunayVoronoi
 
             List<Vector> shape = ShapeCreator.CreateRandomShape(cell.Vertices.ToList<Vector>(), ellipseRelaxationFactor, angleStepCount, randomAngleMovement, keepOriginalShape, randomStartAngle);
 
-            DrawPolygon(shape, Colors.Yellow);
+            DrawPolygon(shape, Colors.LawnGreen);
         }
 
         /// <summary>
