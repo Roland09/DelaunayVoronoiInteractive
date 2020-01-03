@@ -45,7 +45,7 @@
             <GroupBox Header="New - Fixed Points" Height="100" Canvas.Left="550" Width="150">
                 <Canvas Canvas.Top="10" Margin="0,0,-2,-12" Height="70" VerticalAlignment="Top">
 
-                    <TextBox x:Name="tfPointCount" Height="23" Canvas.Left="81" TextWrapping="Wrap" Text="3" Width="47" PreviewTextInput="TfPointCount_PreviewTextInput" TextAlignment="Right" Margin="0,4,0,0"/>
+                    <TextBox x:Name="tfPointCount" Height="23" Canvas.Left="81" TextWrapping="Wrap" Text="20" Width="47" PreviewTextInput="TfPointCount_PreviewTextInput" TextAlignment="Right" Margin="0,4,0,0"/>
                     <Label x:Name="lbPointCount" Content="Point Count" RenderTransformOrigin="0.524,0.615" Canvas.Left="4" Canvas.Top="-1" Margin="0,4,0,0"/>
                     <Button x:Name="btReset" Content="Clear &amp; Add Points" Canvas.Left="4" Canvas.Top="30" Width="124" Click="BtReset_Click"/>
 
@@ -58,12 +58,25 @@
                 </Canvas>
             </GroupBox>
 
-            <GroupBox Header="Shape" Height="100" Canvas.Left="835" Width="140">
-                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-40,0" Width="110" HorizontalAlignment="Left">
+            <GroupBox Header="Shape" Height="100" Canvas.Left="835" Width="180">
+                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-2,-8" Width="160" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawRandomShape" Content="Random Shape" IsChecked="False" Margin="4,4,0,0"/>
+                    
+                    <DockPanel VerticalAlignment="Center" Margin="0">
+                        <Label DockPanel.Dock="Left" HorizontalAlignment="Left">Steps</Label>
+                        <TextBox Text="{Binding ElementName=sldrResampling, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="20" HorizontalAlignment="Right" />
+                        <Slider x:Name="sldrResampling" Margin="4,4,0,0" Maximum="60" SmallChange="1" TickFrequency="5" Value="10" LargeChange="5" Minimum="3"/>
+                    </DockPanel>
+
+                    <DockPanel VerticalAlignment="Center" Margin="0">
+                        <Label DockPanel.Dock="Left" HorizontalAlignment="Left">Relax</Label>
+                        <TextBox Text="{Binding ElementName=sldrRelaxation, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="20" HorizontalAlignment="Right" />
+                        <Slider x:Name="sldrRelaxation" Margin="4,4,0,0" Maximum="1" SmallChange="0.01" TickFrequency="0.1" Value="1" LargeChange="0.1"/>
+                    </DockPanel>
+
                 </StackPanel>
             </GroupBox>
-            
+
         </Canvas>
         <Border x:Name="CanvasBorder" DockPanel.Dock="Top" Margin="0" BorderBrush="#FF1B1B1B" BorderThickness="0" >
             <Canvas x:Name="Graph" Background="White" Margin="0" />

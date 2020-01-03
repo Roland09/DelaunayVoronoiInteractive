@@ -78,7 +78,7 @@ namespace InteractiveDelaunayVoronoi
             Graph.MouseMove += MouseMoveHandler;
             #endregion mouse handlers
 
-            #region checkbox handlers
+            #region component event handlers
             // checkbox visualization changes
             cbDrawCircumCenters.Checked += GraphUpdateHandler;
             cbDrawCircumCenters.Unchecked += GraphUpdateHandler;
@@ -110,7 +110,14 @@ namespace InteractiveDelaunayVoronoi
             cbClipAtBounds.Checked += GraphUpdateHandler;
             cbClipAtBounds.Unchecked += GraphUpdateHandler;
 
-            #endregion checkbox handlers
+            cbDrawRandomShape.Checked += GraphUpdateHandler;
+            cbDrawRandomShape.Unchecked += GraphUpdateHandler;
+
+            sldrResampling.ValueChanged += GraphUpdateHandler;
+            sldrRelaxation.ValueChanged += GraphUpdateHandler;
+
+            #endregion component event handlers
+
 
             // disable the voronoi clip drawing, it's only for testing purposes for the GetAllClippedVoronoiPolygons method
             // needs some adjustment, eg dynamically adding points doesn't work when it is activated
@@ -619,11 +626,11 @@ namespace InteractiveDelaunayVoronoi
 
         private void DrawRandomShape(Cell cell)
         {
-            int angleStepCount = 20;
+            int angleStepCount = (int) sldrResampling.Value;
+            double ellipseRelaxationFactor = sldrRelaxation.Value; // 0.90;
+            bool randomStartAngle = false;
             bool randomAngleMovement = false;
             bool keepOriginalShape = false;
-            double ellipseRelaxationFactor = 0.90;
-            bool randomStartAngle = false;
 
             List<Vector> shape = ShapeCreator.CreateRandomShape(cell.Vertices.ToList<Vector>(), ellipseRelaxationFactor, angleStepCount, randomAngleMovement, keepOriginalShape, randomStartAngle);
 
