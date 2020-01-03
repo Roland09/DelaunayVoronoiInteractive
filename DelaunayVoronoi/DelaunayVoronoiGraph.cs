@@ -209,6 +209,9 @@ namespace DelaunayVoronoi
 
                 List<Point> circumCenterPoints = GetCircumCenterPoints(point);
 
+                if (circumCenterPoints.Count == 0)
+                    continue;
+
                 foreach (Point circumCenterPoint in circumCenterPoints)
                 {
                     currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
@@ -232,6 +235,28 @@ namespace DelaunayVoronoi
             }
 
             return allCells;
+        }
+
+
+        /// <summary>
+        /// Get the mean vector of the specified cell
+        /// </summary>
+        /// <returns></returns>
+        public static System.Windows.Point GetMeanVector( Cell cell)
+        {
+            if (cell.Vertices.Length == 0)
+                return new System.Windows.Point( 0,0);
+
+            double x = 0f;
+            double y = 0f;
+
+            foreach (System.Windows.Point pos in cell.Vertices)
+            {
+                x += pos.X;
+                y += pos.Y;
+            }
+
+            return new System.Windows.Point(x / cell.Vertices.Length, y / cell.Vertices.Length);
         }
     }
 }

@@ -7,41 +7,42 @@
         mc:Ignorable="d"
         Title="Delaunay / Voroni - Interactive" Height="532" Width="864">
     <DockPanel Margin="0">
-        <Canvas VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Height="84" Background="#FFE6E6E6" Margin="0">
+        <Canvas VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Height="100" Background="#FFE6E6E6" Margin="0">
 
-            <GroupBox Header="Indicators" Height="80" Width="120">
-                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-2,-40" Width="110" HorizontalAlignment="Left">
+            <GroupBox Header="Indicators" Height="100" Width="120">
+                <StackPanel Height="90" VerticalAlignment="Top" Margin="0,0,-2,-40" Width="110" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawPoints" Content="Points" IsChecked="True" Margin="4,4,0,0" HorizontalContentAlignment="Stretch"/>
                     <CheckBox x:Name="cbDrawCircumCenters" Content="CircumCenters" IsChecked="True" Margin="4,4,0,0" HorizontalContentAlignment="Stretch" />
                     <CheckBox x:Name="cbDrawCircumCircles" Content="CircumCircles" Margin="4,4,0,0" HorizontalContentAlignment="Stretch"/>
+                    <CheckBox x:Name="cbDrawMeanVector" Content="Mean Vector" Margin="4,4,0,0" HorizontalContentAlignment="Stretch"/>
 
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Graph" Height="80" Canvas.Left="125" Width="110">
+            <GroupBox Header="Graph" Height="100" Canvas.Left="125" Width="110">
                 <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-22,0" Width="110" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawDelaunay" Content="Delaunay" IsChecked="True" Margin="4,4,0,0"  />
                     <CheckBox x:Name="cbDrawVoronoi" Content="Voronoi" IsChecked="True" Margin="4,4,0,0"  />
                     <CheckBox x:Name="cbDrawClipVoronoi" Content="Clip Voronoi" IsChecked="False" Margin="4,4,0,0"  />
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Voronoi Fill" Height="80" Canvas.Left="240" Width="110">
+            <GroupBox Header="Voronoi Fill" Height="100" Canvas.Left="240" Width="110">
                 <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-40,0" Width="110" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawVoronoiFillAll" Content="Fill All" IsChecked="True" Margin="4,4,0,0"/>
                     <CheckBox x:Name="cbDrawVoronoiFillCurrent" Content="Fill Current" IsChecked="True" Margin="4,4,0,0"/>
                     <CheckBox x:Name="cbClipAtBounds" Content="Clip Bounds" Margin="4,4,0,0"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Interaction" Height="80" Canvas.Left="350" Width="100">
+            <GroupBox Header="Interaction" Height="100" Canvas.Left="350" Width="100">
                 <Canvas Canvas.Top="10" Margin="0,0,-2,-12" Height="70" VerticalAlignment="Top">
                     <CheckBox x:Name="cbContinuousUpdate" Content="Continuous" IsChecked="True" Margin="4,4,0,0" />
                 </Canvas>
             </GroupBox>
-            <GroupBox Header="New - Empty" Height="80" Canvas.Left="450" Width="100">
+            <GroupBox Header="New - Empty" Height="100" Canvas.Left="450" Width="100">
                 <Canvas Canvas.Left="511" Canvas.Top="10" Margin="0,0,-2,-12">
                     <Button x:Name="btClear" Content="Clear" Click="BtClear_Click" Canvas.Left="10" Canvas.Top="29" Width="65"/>
                 </Canvas>
             </GroupBox>
-            <GroupBox Header="New - Fixed Points" Height="80" Canvas.Left="550" Width="150">
+            <GroupBox Header="New - Fixed Points" Height="100" Canvas.Left="550" Width="150">
                 <Canvas Canvas.Top="10" Margin="0,0,-2,-12" Height="70" VerticalAlignment="Top">
 
                     <TextBox x:Name="tfPointCount" Height="23" Canvas.Left="81" TextWrapping="Wrap" Text="3" Width="47" PreviewTextInput="TfPointCount_PreviewTextInput" TextAlignment="Right" Margin="0,4,0,0"/>
@@ -50,7 +51,7 @@
 
                 </Canvas>
             </GroupBox>
-            <GroupBox Header="Add Pattern" Height="80" Canvas.Left="700" Width="135">
+            <GroupBox Header="Add Pattern" Height="100" Canvas.Left="700" Width="135">
                 <Canvas Canvas.Top="10" Margin="0,0,-2,-12" Height="70" VerticalAlignment="Top">
                     <ComboBox x:Name="cbFillPattern" Width="120" Canvas.Left="4" Canvas.Top="4"/>
                     <Button x:Name="btFillPattern" Content="Add Points" Canvas.Left="4" Canvas.Top="30" Click="BtFillPattern_Click" Width="120"/>

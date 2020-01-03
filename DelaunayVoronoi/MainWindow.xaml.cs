@@ -89,6 +89,9 @@ namespace InteractiveDelaunayVoronoi
             cbDrawPoints.Checked += GraphUpdateHandler;
             cbDrawPoints.Unchecked += GraphUpdateHandler;
 
+            cbDrawMeanVector.Checked += GraphUpdateHandler;
+            cbDrawMeanVector.Unchecked += GraphUpdateHandler;
+
             cbDrawDelaunay.Checked += GraphUpdateHandler;
             cbDrawDelaunay.Unchecked += GraphUpdateHandler;
 
@@ -369,9 +372,40 @@ namespace InteractiveDelaunayVoronoi
                 DrawAllClippedPolygons();
             }
 
+            if(cbDrawMeanVector.IsChecked.GetValueOrDefault())
+            {
+                DrawMeanVector();
+            }
+
             #endregion visualization
 
         }
+
+        /// <summary>
+        /// Draw the mean vector point for all cells.
+        /// </summary>
+        private void DrawMeanVector()
+        {
+            // bounding box
+            Point[] clipPolygon = null;
+
+            if (cbClipAtBounds.IsChecked.GetValueOrDefault())
+            {
+                clipPolygon = GetClipPolygon(clipAtBoundsMargin);
+            }
+
+            // get all cells
+            List<Cell> allCells = graph.GetAllVoronoiCells(clipPolygon);
+
+            // iterate through all cells and draw the mean vector point
+            foreach( Cell cell in allCells)
+            {
+                Point meanVector = DelaunayVoronoiGraph.GetMeanVector(cell);
+
+                DrawPoint(meanVector, Brushes.Green);
+            }
+        }
+
 
         /// <summary>
         /// Draw the point list
