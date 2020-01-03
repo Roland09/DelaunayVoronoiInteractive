@@ -10,14 +10,14 @@ namespace InteractiveDelaunayVoronoi
         /// <summary>
         /// The vertices which build the voronoi cell
         /// </summary>
-        public Point[] Vertices { get; }
+        public Vector[] Vertices { get; }
 
         /// <summary>
         /// The center point around which the vertices are distributed
         /// </summary>
-        public Point Center { get; }
+        public Vector Center { get; }
 
-        public Cell(Point[] vertices, Point center)
+        public Cell(Vector[] vertices, Vector center)
         {
             Vertices = vertices;
             Center = center;

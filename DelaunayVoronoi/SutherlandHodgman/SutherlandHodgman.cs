@@ -19,14 +19,14 @@ namespace SutherlandHodgmanAlgorithm
         /// </summary>
         private class Edge
         {
-            public Edge(Point from, Point to)
+            public Edge(Vector from, Vector to)
             {
                 this.From = from;
                 this.To = to;
             }
  
-            public readonly Point From;
-            public readonly Point To;
+            public readonly Vector From;
+            public readonly Vector To;
         }
  
         #endregion
@@ -41,14 +41,14 @@ namespace SutherlandHodgmanAlgorithm
         /// <param name="subjectPoly">Can be concave or convex</param>
         /// <param name="clipPoly">Must be convex</param>
         /// <returns>The intersection of the two polygons (or null)</returns>
-        public static Point[] GetIntersectedPolygon(Point[] subjectPoly, Point[] clipPoly)
+        public static Vector[] GetIntersectedPolygon(Vector[] subjectPoly, Vector[] clipPoly)
         {
             if (subjectPoly.Length < 3 || clipPoly.Length < 3)
             {
                 throw new ArgumentException(string.Format("The polygons passed in must have at least 3 points: subject={0}, clip={1}", subjectPoly.Length.ToString(), clipPoly.Length.ToString()));
             }
  
-            List<Point> outputList = subjectPoly.ToList();
+            List<Vector> outputList = subjectPoly.ToList();
  
             //	Make sure it's clockwise
             if (!IsClockwise(subjectPoly))
@@ -59,7 +59,7 @@ namespace SutherlandHodgmanAlgorithm
             //	Walk around the clip polygon clockwise
             foreach (Edge clipEdge in IterateEdgesClockwise(clipPoly))
             {
-                List<Point> inputList = outputList.ToList();		//	clone it
+                List<Vector> inputList = outputList.ToList();		//	clone it
                 outputList.Clear();
  
                 if (inputList.Count == 0)
@@ -67,16 +67,16 @@ namespace SutherlandHodgmanAlgorithm
                     //	Sometimes when the polygons don't intersect, this list goes to zero.  Jump out to avoid an index out of range exception
                     break;
                 }
+
+                Vector S = inputList[inputList.Count - 1];
  
-                Point S = inputList[inputList.Count - 1];
- 
-                foreach (Point E in inputList)
+                foreach (Vector E in inputList)
                 {
                     if (IsInside(clipEdge, E))
                     {
                         if (!IsInside(clipEdge, S))
                         {
-                            Point? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
+                            Vector? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
                             if (point == null)
                             {
                                 throw new ApplicationException("Line segments don't intersect");		//	may be colinear, or may be a bug
@@ -91,7 +91,7 @@ namespace SutherlandHodgmanAlgorithm
                     }
                     else if (IsInside(clipEdge, S))
                     {
-                        Point? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
+                        Vector? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
                         if (point == null)
                         {
                             throw new ApplicationException("Line segments don't intersect");		//	may be colinear, or may be a bug
@@ -115,7 +115,7 @@ namespace SutherlandHodgmanAlgorithm
         /// <summary>
         /// This iterates through the edges of the polygon, always clockwise
         /// </summary>
-        private static IEnumerable<Edge> IterateEdgesClockwise(Point[] polygon)
+        private static IEnumerable<Edge> IterateEdgesClockwise(Vector[] polygon)
         {
             if (IsClockwise(polygon))
             {
@@ -152,7 +152,7 @@ namespace SutherlandHodgmanAlgorithm
         /// Got this here:
         /// http://stackoverflow.com/questions/14480124/how-do-i-detect-triangle-and-rectangle-intersection
         /// </remarks>
-        private static Point? GetIntersect(Point line1From, Point line1To, Point line2From, Point line2To)
+        private static Vector? GetIntersect(Vector line1From, Vector line1To, Vector line2From, Vector line2To)
         {
             Vector direction1 = line1To - line1From;
             Vector direction2 = line2To - line2From;
@@ -181,7 +181,7 @@ namespace SutherlandHodgmanAlgorithm
             return line1From + (t * direction1);
         }
  
-        private static bool IsInside(Edge edge, Point test)
+        private static bool IsInside(Edge edge, Vector test)
         {
             bool? isLeft = IsLeftOf(edge, test);
             if (isLeft == null)
@@ -192,7 +192,7 @@ namespace SutherlandHodgmanAlgorithm
  
             return !isLeft.Value;
         }
-        private static bool IsClockwise(Point[] polygon)
+        private static bool IsClockwise(Vector[] polygon)
         {
             for (int cntr = 2; cntr < polygon.Length; cntr++)
             {
@@ -209,7 +209,7 @@ namespace SutherlandHodgmanAlgorithm
         /// <summary>
         /// Tells if the test point lies on the left side of the edge line
         /// </summary>
-        private static bool? IsLeftOf(Edge edge, Point test)
+        private static bool? IsLeftOf(Edge edge, Vector test)
         {
             Vector tmp1 = edge.To - edge.From;
             Vector tmp2 = test - edge.To;

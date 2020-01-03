@@ -12,13 +12,13 @@ namespace InteractiveDelaunayVoronoi
     /// </summary>
     public class Triangle
     {
-        public Point[] Vertices { get; }
-        public Point CircumCenter { get; }
+        public Vector[] Vertices { get; }
+        public Vector CircumCenter { get; }
         public double RadiusSquared;
 
-        public Triangle(Point point1, Point point2, Point point3, Point circumcenter, double radiusSquared)
+        public Triangle(Vector vector1, Vector vector2, Vector vector3, Vector circumcenter, double radiusSquared)
         {
-            Vertices = new Point[3] { point1, point2, point3 };
+            Vertices = new Vector[3] { vector1, vector2, vector3 };
             CircumCenter = circumcenter;
             RadiusSquared = radiusSquared;
         }

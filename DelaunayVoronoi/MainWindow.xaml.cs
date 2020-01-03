@@ -9,7 +9,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using Point = System.Windows.Point;
 using Edge = InteractiveDelaunayVoronoi.Edge;
 
 
@@ -387,7 +386,7 @@ namespace InteractiveDelaunayVoronoi
         private void DrawMeanVector()
         {
             // bounding box
-            Point[] clipPolygon = null;
+            Vector[] clipPolygon = null;
 
             if (cbClipAtBounds.IsChecked.GetValueOrDefault())
             {
@@ -400,7 +399,7 @@ namespace InteractiveDelaunayVoronoi
             // iterate through all cells and draw the mean vector point
             foreach( Cell cell in allCells)
             {
-                Point meanVector = DelaunayVoronoiGraph.GetMeanVector(cell);
+                Vector meanVector = DelaunayVoronoiGraph.GetMeanVector(cell);
 
                 DrawPoint(meanVector, Brushes.Green);
             }
@@ -411,7 +410,7 @@ namespace InteractiveDelaunayVoronoi
         /// Draw the point list
         /// </summary>
         /// <param name="points"></param>
-        private void DrawPoints(IEnumerable<Point> points)
+        private void DrawPoints(IEnumerable<Vector> points)
         {
             foreach (var point in points)
             {
@@ -436,7 +435,7 @@ namespace InteractiveDelaunayVoronoi
         /// Draw the circumcenter points of the triangulation
         /// </summary>
         /// <param name="triangulation"></param>
-        private void DrawCircumCenters(IEnumerable<Point> circumCenters)
+        private void DrawCircumCenters(IEnumerable<Vector> circumCenters)
         {
             foreach (var point in circumCenters)
             {
@@ -511,10 +510,10 @@ namespace InteractiveDelaunayVoronoi
                     Stroke = System.Windows.Media.Brushes.SteelBlue,
                     StrokeThickness = 0.6,
 
-                    X1 = edge.Point1.X,
-                    X2 = edge.Point2.X,
-                    Y1 = edge.Point1.Y,
-                    Y2 = edge.Point2.Y
+                    X1 = edge.Vector1.X,
+                    X2 = edge.Vector2.X,
+                    Y1 = edge.Vector1.Y,
+                    Y2 = edge.Vector2.Y
                 };
 
                 Graph.Children.Add(line);
@@ -534,10 +533,10 @@ namespace InteractiveDelaunayVoronoi
                     Stroke = System.Windows.Media.Brushes.DarkViolet,
                     StrokeThickness = 1,
 
-                    X1 = edge.Point1.X,
-                    X2 = edge.Point2.X,
-                    Y1 = edge.Point1.Y,
-                    Y2 = edge.Point2.Y
+                    X1 = edge.Vector1.X,
+                    X2 = edge.Vector2.X,
+                    Y1 = edge.Vector1.Y,
+                    Y2 = edge.Vector2.Y
                 };
 
                 Graph.Children.Add(line);
@@ -553,10 +552,10 @@ namespace InteractiveDelaunayVoronoi
             if (movementPointIndex < 0 || movementPointIndex != graph.GetLastPointIndex())
                 return;
 
-            Point point = graph.GetPoint(movementPointIndex);
-            List<Point> circumCenterPoints = graph.GetCircumCenterPoints(movementPointIndex);
+            Vector point = graph.GetPoint(movementPointIndex);
+            List<Vector> circumCenterPoints = graph.GetCircumCenterPoints(movementPointIndex);
 
-            foreach (Point circumCenterPoint in circumCenterPoints)
+            foreach (Vector circumCenterPoint in circumCenterPoints)
             {
 
                 DrawPoint(circumCenterPoint, Brushes.DarkSalmon);
@@ -581,7 +580,7 @@ namespace InteractiveDelaunayVoronoi
 
             for( int i=0; i < graph.GetPoints().Count; i++)
             {
-                List<Point> circumCenterPoints = graph.GetCircumCenterPoints( i);
+                List<Vector> circumCenterPoints = graph.GetCircumCenterPoints( i);
 
                 // fill polygon
                 Color color = GetRandomColor(i);
@@ -596,7 +595,7 @@ namespace InteractiveDelaunayVoronoi
         /// Create a polygon which consists of the bounding box plus a margin
         /// </summary>
         /// <returns></returns>
-        private Point[] GetClipPolygon( double margin)
+        private Vector[] GetClipPolygon( double margin)
         {
             // clip polygon, bounding box
             double left = 0 + margin;
@@ -604,7 +603,7 @@ namespace InteractiveDelaunayVoronoi
             double right = CanvasBorder.ActualWidth - margin;
             double bottom = CanvasBorder.ActualHeight - margin;
 
-            Point[] clipPolygon = new Point[] { new Point(left, top), new Point(right, top), new Point(right, bottom), new Point(left, bottom) };
+            Vector[] clipPolygon = new Vector[] { new Vector(left, top), new Vector(right, top), new Vector(right, bottom), new Vector(left, bottom) };
 
             return clipPolygon;
         }
@@ -614,16 +613,16 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        private Point[] ClipAtBounds(Point[] currentPolygon)
+        private Vector[] ClipAtBounds(Vector[] currentPolygon)
         {
             // ensure there are data
             if (currentPolygon.Length == 0)
                 return currentPolygon;
 
             // clip polygon, bounding box
-            Point[] clipPolygon = GetClipPolygon( clipAtBoundsMargin);
+            Vector[] clipPolygon = GetClipPolygon( clipAtBoundsMargin);
 
-            Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(currentPolygon, clipPolygon);
+            Vector[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(currentPolygon, clipPolygon);
 
             return intersectedPolygon;
         }
@@ -635,16 +634,16 @@ namespace InteractiveDelaunayVoronoi
         /// Basically this is the method to use. It gives you all Voronoi polygons exactly on the Canvas
         /// </summary>
         /// <returns></returns>
-        private List<Point[]> GetAllClippedVoronoiPolygons()
+        private List<Vector[]> GetAllClippedVoronoiPolygons()
         {
             // bounding box
-            Point[] clipPolygon = GetClipPolygon(clipAtBoundsMargin);
+            Vector[] clipPolygon = GetClipPolygon(clipAtBoundsMargin);
 
-            List<Point[]> allVoronoiPolygons = new List<Point[]>();
+            List<Vector[]> allVoronoiPolygons = new List<Vector[]>();
 
-            foreach(Point[]  polygon in graph.GetAllVoronoiPolygons())
+            foreach(Vector[]  polygon in graph.GetAllVoronoiPolygons())
             {
-                Point[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(polygon, clipPolygon);
+                Vector[] intersectedPolygon = SutherlandHodgman.GetIntersectedPolygon(polygon, clipPolygon);
                 allVoronoiPolygons.Add(intersectedPolygon);
             }          
 
@@ -656,16 +655,16 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         private void DrawAllClippedPolygons()
         {
-            List<Point[]> allPolygons = GetAllClippedVoronoiPolygons();
+            List<Vector[]> allPolygons = GetAllClippedVoronoiPolygons();
 
             for (int i = 0; i < allPolygons.Count; i++)
             {
                 // get clipped voronoi polygon
-                Point[] voronoiPolygon = allPolygons[i];
+                Vector[] voronoiPolygon = allPolygons[i];
 
                 // draw point
                 SolidColorBrush pointBrush = new SolidColorBrush( Colors.Yellow);
-                foreach (Point point in voronoiPolygon)
+                foreach (Vector point in voronoiPolygon)
                 {
                     DrawPoint(point, pointBrush);
                 }
@@ -674,9 +673,9 @@ namespace InteractiveDelaunayVoronoi
 
                 // convert to point collection
                 PointCollection pointCollection = new PointCollection();
-                foreach (Point point in voronoiPolygon)
+                foreach (Vector point in voronoiPolygon)
                 {
-                    pointCollection.Add(point);
+                    pointCollection.Add( new System.Windows.Point( point.X, point.Y));
                 }
 
                 // fill polygon
@@ -703,12 +702,12 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         /// <param name="circumCenterPoints"></param>
         /// <param name="color"></param>
-        private void DrawPolygon(List<Point> circumCenterPoints, Color color)
+        private void DrawPolygon(List<Vector> circumCenterPoints, Color color)
         {
             // convert to System.Windows.Point array
-            Point[] currentPolygon = circumCenterPoints.ToArray();
+            Vector[] currentPolygon = circumCenterPoints.ToArray();
 
-            Point[] intersectedPolygon;
+            Vector[] intersectedPolygon;
 
             // optionally clip at bounds
             if (cbClipAtBounds.IsChecked.GetValueOrDefault())
@@ -723,9 +722,9 @@ namespace InteractiveDelaunayVoronoi
 
             // convert to point collection
             PointCollection pointCollection = new PointCollection();
-            foreach (Point point in intersectedPolygon)
+            foreach (Vector point in intersectedPolygon)
             {
-                pointCollection.Add(point);
+                pointCollection.Add( new System.Windows.Point( point.X, point.Y));
             }
 
             SolidColorBrush strokeBrush = new SolidColorBrush(color);
@@ -749,7 +748,7 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         /// <param name="point"></param>
         /// <param name="brush"></param>
-        private void DrawPoint(Point point, SolidColorBrush brush)
+        private void DrawPoint(Vector point, SolidColorBrush brush)
         {
             // draw point
             var myEllipse = new Ellipse

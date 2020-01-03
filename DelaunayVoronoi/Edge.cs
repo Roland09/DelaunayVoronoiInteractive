@@ -12,13 +12,13 @@ namespace InteractiveDelaunayVoronoi
     /// </summary>
     public class Edge
     {
-        public Point Point1 { get; }
-        public Point Point2 { get; }
+        public Vector Vector1 { get; }
+        public Vector Vector2 { get; }
 
-        public Edge(Point point1, Point point2)
+        public Edge(Vector vector1, Vector vector2)
         {
-            Point1 = point1;
-            Point2 = point2;
+            Vector1 = vector1;
+            Vector2 = vector2;
         }
     }
 }

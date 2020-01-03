@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DelaunayVoronoi
 {
@@ -87,9 +88,9 @@ namespace DelaunayVoronoi
             voronoiTimer.Stop();
         }
 
-        public List<System.Windows.Point> GetPoints()
+        public List<Vector> GetPoints()
         {
-            return ToWindowsPoints(this.points);
+            return ToVectors(this.points);
         }
 
         private List<Point> GetCircumCenterPoints(Point point)
@@ -109,44 +110,44 @@ namespace DelaunayVoronoi
             return circumCenterPoints;
         }
 
-        public List<System.Windows.Point> GetCircumCenterPoints(int index)
+        public List<Vector> GetCircumCenterPoints(int index)
         {
             Point point = ((List<Point>)points)[index];
 
             List<Point> circumCenterPoints = GetCircumCenterPoints(point);
 
-            return ToWindowsPoints( circumCenterPoints);
+            return ToVectors( circumCenterPoints);
         }
 
-        public List<System.Windows.Point> GetCircumCenterPoints()
+        public List<Vector> GetCircumCenterPoints()
         {
-            return triangulation.Select(item => ToWindowsPoint( item.Circumcenter)).ToList();
+            return triangulation.Select(item => ToVector( item.Circumcenter)).ToList();
         }
 
-        public System.Windows.Point GetPoint( int index)
+        public Vector GetPoint( int index)
         {
             Point point = ((List<Point>)points)[index];
 
-            return ToWindowsPoint( point);
+            return ToVector( point);
         }
 
-        private List<System.Windows.Point> ToWindowsPoints(IEnumerable<Point> points)
+        private List<Vector> ToVectors(IEnumerable<Point> points)
         {
-            return points.Select(item => ToWindowsPoint( item)).ToList();
+            return points.Select(item => ToVector( item)).ToList();
         }
 
-        private System.Windows.Point ToWindowsPoint( Point point)
+        private Vector ToVector( Point point)
         {
-            return new System.Windows.Point(point.X, point.Y);
+            return new Vector(point.X, point.Y);
         }
 
         public List<InteractiveDelaunayVoronoi.Triangle> GetDelaunayTriangles()
         {
             return triangulation.Select(item => new InteractiveDelaunayVoronoi.Triangle( //
-                ToWindowsPoint(item.Vertices[0]), //
-                ToWindowsPoint(item.Vertices[1]), //
-                ToWindowsPoint(item.Vertices[2]), //
-                ToWindowsPoint(item.Circumcenter), //
+                ToVector(item.Vertices[0]), //
+                ToVector(item.Vertices[1]), //
+                ToVector(item.Vertices[2]), //
+                ToVector(item.Circumcenter), //
                 item.RadiusSquared //
                 )
             ).ToList();
@@ -155,8 +156,8 @@ namespace DelaunayVoronoi
         public List<InteractiveDelaunayVoronoi.Edge> GetVoronoiEdges()
         {
             return vornoiEdges.Select(item => new InteractiveDelaunayVoronoi.Edge( //
-                ToWindowsPoint( item.Point1), //
-                ToWindowsPoint( item.Point2)) //
+                ToVector( item.Point1), //
+                ToVector( item.Point2)) //
             ).ToList();
         }
 
@@ -164,18 +165,18 @@ namespace DelaunayVoronoi
         /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
         /// </summary>
         /// <returns></returns>
-        public List<System.Windows.Point[]> GetAllVoronoiPolygons()
+        public List<Vector[]> GetAllVoronoiPolygons()
         {
-            List<System.Windows.Point[]> allPolygons = new List<System.Windows.Point[]>();
+            List<Vector[]> allPolygons = new List<Vector[]>();
 
             foreach ( Point point in points)
             {
-                List<System.Windows.Point> currentPolygon = new List<System.Windows.Point>();
+                List<Vector> currentPolygon = new List<Vector>();
 
                 List<Point> circumCenterPoints = GetCircumCenterPoints(point);
                 foreach (Point circumCenterPoint in circumCenterPoints)
                 {
-                    currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
+                    currentPolygon.Add(ToVector(circumCenterPoint));
                 }
 
                 allPolygons.Add(currentPolygon.ToArray());
@@ -199,13 +200,13 @@ namespace DelaunayVoronoi
         /// Optionally clip the points at the specified polygon.
         /// </summary>
         /// <returns></returns>
-        public List<Cell> GetAllVoronoiCells(System.Windows.Point[] clipPolygon)
+        public List<Cell> GetAllVoronoiCells(Vector[] clipPolygon)
         {
             List<Cell> allCells = new List<Cell>();
 
             foreach (Point point in points)
             {
-                List<System.Windows.Point> currentPolygon = new List<System.Windows.Point>();
+                List<Vector> currentPolygon = new List<Vector>();
 
                 List<Point> circumCenterPoints = GetCircumCenterPoints(point);
 
@@ -214,21 +215,21 @@ namespace DelaunayVoronoi
 
                 foreach (Point circumCenterPoint in circumCenterPoints)
                 {
-                    currentPolygon.Add(ToWindowsPoint(circumCenterPoint));
+                    currentPolygon.Add(ToVector(circumCenterPoint));
                 }
 
                 Cell cell;
 
                 if (clipPolygon == null)
                 {
-                    cell = new Cell(currentPolygon.ToArray(), ToWindowsPoint(point));
+                    cell = new Cell(currentPolygon.ToArray(), ToVector(point));
                 }
                 else
                 {
-                    System.Windows.Point[] clippedPoints = SutherlandHodgman.GetIntersectedPolygon(currentPolygon.ToArray(), clipPolygon);
+                    Vector[] clippedPoints = SutherlandHodgman.GetIntersectedPolygon(currentPolygon.ToArray(), clipPolygon);
 
                     // create the cell including polygons and center point
-                    cell = new Cell(clippedPoints, ToWindowsPoint(point));
+                    cell = new Cell(clippedPoints, ToVector(point));
                 }
 
                 allCells.Add( cell);
@@ -242,21 +243,21 @@ namespace DelaunayVoronoi
         /// Get the mean vector of the specified cell
         /// </summary>
         /// <returns></returns>
-        public static System.Windows.Point GetMeanVector( Cell cell)
+        public static Vector GetMeanVector( Cell cell)
         {
             if (cell.Vertices.Length == 0)
-                return new System.Windows.Point( 0,0);
+                return new Vector( 0,0);
 
             double x = 0f;
             double y = 0f;
 
-            foreach (System.Windows.Point pos in cell.Vertices)
+            foreach (Vector pos in cell.Vertices)
             {
                 x += pos.X;
                 y += pos.Y;
             }
 
-            return new System.Windows.Point(x / cell.Vertices.Length, y / cell.Vertices.Length);
+            return new Vector(x / cell.Vertices.Length, y / cell.Vertices.Length);
         }
     }
 }
