@@ -153,8 +153,6 @@ namespace InteractiveDelaunayVoronoi
             #region create new polygon using the intersections
             List<Vector> newPolygon = new List<Vector>();
 
-            double prevDistance = 0;
-
             for (int i = 0; i < resampledPolygon.Count; i++)
             {
                 Vector curr = resampledPolygon[i];
@@ -170,7 +168,7 @@ namespace InteractiveDelaunayVoronoi
                 // move from center towards new position. but not too much, let it depend on the previous distance
                 {
                     // move initially from 0 to max distance. otherwise use the previous value
-                    double min = i == 0 ? distance * ellipseRelaxationFactor : prevDistance * ellipseRelaxationFactor;
+                    double min = distance * ellipseRelaxationFactor;
                     double max = distance;
 
                     // the radius must be smaller during the next iteration, we are navigating around an ellipse => clamp the values
@@ -187,7 +185,6 @@ namespace InteractiveDelaunayVoronoi
 
                 newPolygon.Add(position);
 
-                prevDistance = distance;
             }
             #endregion create new polygon using the intersections
 
