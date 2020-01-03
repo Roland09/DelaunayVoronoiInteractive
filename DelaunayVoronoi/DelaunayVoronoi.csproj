@@ -58,13 +58,16 @@
     <Compile Include="Cell.cs" />
     <Compile Include="DelaunayVoronoiGraph.cs" />
     <Compile Include="Edge.cs" />
-    <Compile Include="VectorUtils\ClockwiseComparer.cs" />
+    <Compile Include="PolygonUtils.cs" />
+    <Compile Include="ShapeCreator.cs" />
+    <Compile Include="VectorUtils\ClockwiseComparerPoint.cs" />
     <Compile Include="DelaunayVoronoi\Point.cs" />
     <Compile Include="DelaunayVoronoi\Edge.cs" />
     <Compile Include="SutherlandHodgman\SutherlandHodgman.cs" />
     <Compile Include="DelaunayVoronoi\Triangle.cs" />
     <Compile Include="DelaunayVoronoi\Voronoi.cs" />
     <Compile Include="Triangle.cs" />
+    <Compile Include="VectorUtils\ClockwiseComparerVector.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 
-namespace DelaunayVoronoi
+namespace Delaunay.VectorUtils
 {
-    /// <summary>
-    /// Comparer which allows you to sort a list of points clockwise around an origin.
-    /// 
-    /// Note: Found this online in several repositories, full credit to the person who created it, unfortunately couldn't find the original author.
-    /// </summary>
-    public class ClockwiseComparer : IComparer<Point>
+  /// <summary>
+  /// Comparer which allows you to sort a list of points clockwise around an origin.
+  /// 
+  /// Note: Found this online in several repositories, full credit to the person who created it, unfortunately couldn't find the original author.
+  /// </summary>
+    public class ClockwiseComparerVector : IComparer<Vector>
     {
         /// <summary>
-        /// 	ClockwiseComparer provides functionality for sorting a collection of Points such
+        /// 	ClockwiseComparer provides functionality for sorting a collection of Vectors such
         /// 	that they are ordered clockwise about a given origin.
         /// </summary>
 
-        private Point m_Origin;
+        private Vector m_Origin;
 
         #region Properties
 
@@ -23,7 +27,7 @@ namespace DelaunayVoronoi
         /// 	Gets or sets the origin.
         /// </summary>
         /// <value>The origin.</value>
-        public Point origin { get { return m_Origin; } set { m_Origin = value; } }
+        public Vector origin { get { return m_Origin; } set { m_Origin = value; } }
 
         #endregion
 
@@ -31,7 +35,7 @@ namespace DelaunayVoronoi
         /// 	Initializes a new instance of the ClockwiseComparer class.
         /// </summary>
         /// <param name="origin">Origin.</param>
-        public ClockwiseComparer(Point origin)
+        public ClockwiseComparerVector(Vector origin)
         {
             m_Origin = origin;
         }
@@ -40,25 +44,25 @@ namespace DelaunayVoronoi
         /// 	Initializes a new instance of the ClockwiseComparer class and sets the origin to the mean vector, depending on the positions.
         /// </summary>
         /// <param name="origin">Origin.</param>
-        public ClockwiseComparer(List<Point> positions)
+        public ClockwiseComparerVector(List<Vector> positions)
         {
             m_Origin = GetMeanVector(positions);
         }
 
-        private Point GetMeanVector(List<Point> positions)
+        private Vector GetMeanVector(List<Vector> positions)
         {
             if (positions.Count == 0)
-                return new Point(0,0);
+                return new Vector(0, 0);
 
             double x = 0f;
             double y = 0f;
 
-            foreach (Point pos in positions)
+            foreach (Vector pos in positions)
             {
                 x += pos.X;
                 y += pos.Y;
             }
-            return new Point(x / (double)positions.Count, y / (double)positions.Count);
+            return new Vector(x / (double)positions.Count, y / (double)positions.Count);
         }
 
         #region IComparer Methods
@@ -68,7 +72,7 @@ namespace DelaunayVoronoi
         /// </summary>
         /// <param name="first">First.</param>
         /// <param name="second">Second.</param>
-        public int Compare(Point first, Point second)
+        public int Compare(Vector first, Vector second)
         {
             return IsClockwise(first, second, m_Origin);
         }
@@ -83,18 +87,18 @@ namespace DelaunayVoronoi
         /// <param name="first">First.</param>
         /// <param name="second">Second.</param>
         /// <param name="origin">Origin.</param>
-        public static int IsClockwise(Point first, Point second, Point origin)
+        public static int IsClockwise(Vector first, Vector second, Vector origin)
         {
 
             //if (first == second)
             if (first.X == second.X && first.Y == second.Y)
                 return 0;
 
-            //Point firstOffset = first - origin;
-            Point firstOffset = new Point(first.X - origin.X, first.Y - origin.Y);
+            //Vector firstOffset = first - origin;
+            Vector firstOffset = new Vector(first.X - origin.X, first.Y - origin.Y);
 
-            //Point secondOffset = second - origin;
-            Point secondOffset = new Point(second.X - origin.X, second.Y - origin.Y);
+            //Vector secondOffset = second - origin;
+            Vector secondOffset = new Vector(second.X - origin.X, second.Y - origin.Y);
 
 
             double angle1 = System.Math.Atan2(firstOffset.X, firstOffset.Y);

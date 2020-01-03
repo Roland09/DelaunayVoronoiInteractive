@@ -105,7 +105,7 @@ namespace DelaunayVoronoi
             }
 
             // ensure the points are in clockwise order
-            circumCenterPoints.Sort(new ClockwiseComparer(point));
+            circumCenterPoints.Sort(new ClockwiseComparerPoint(point));
 
             return circumCenterPoints;
         }

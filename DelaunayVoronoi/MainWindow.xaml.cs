@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Edge = InteractiveDelaunayVoronoi.Edge;
+using System.Linq;
 
 
 namespace InteractiveDelaunayVoronoi
@@ -376,6 +377,10 @@ namespace InteractiveDelaunayVoronoi
                 DrawMeanVector();
             }
 
+            if( cbDrawRandomShape.IsChecked.GetValueOrDefault())
+            {
+                DrawRandomShape();
+            }
             #endregion visualization
 
         }
@@ -589,6 +594,40 @@ namespace InteractiveDelaunayVoronoi
 
             }
 
+        }
+
+        private void DrawRandomShape()
+        {
+            // bounding box
+            Vector[] clipPolygon = null;
+
+            if (cbClipAtBounds.IsChecked.GetValueOrDefault())
+            {
+                clipPolygon = GetClipPolygon(clipAtBoundsMargin);
+            }
+
+            // get all cells
+            List<Cell> allCells = graph.GetAllVoronoiCells(clipPolygon);
+
+            // iterate through all cells and draw the mean vector point
+            for (int i = 0; i < allCells.Count; i++)
+            {
+                Cell cell = allCells[i];
+                DrawRandomShape(cell);
+            }
+        }
+
+        private void DrawRandomShape(Cell cell)
+        {
+            int angleStepCount = 20;
+            bool randomAngleMovement = false;
+            bool keepOriginalShape = false;
+            double ellipseRelaxationFactor = 0.90;
+            bool randomStartAngle = false;
+
+            List<Vector> shape = ShapeCreator.CreateRandomShape(cell.Vertices.ToList<Vector>(), ellipseRelaxationFactor, angleStepCount, randomAngleMovement, keepOriginalShape, randomStartAngle);
+
+            DrawPolygon(shape, Colors.Yellow);
         }
 
         /// <summary>

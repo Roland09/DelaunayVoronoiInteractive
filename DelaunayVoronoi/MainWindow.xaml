@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InteractiveDelaunayVoronoi"
         mc:Ignorable="d"
-        Title="Delaunay / Voroni - Interactive" Height="532" Width="864">
+        Title="Delaunay / Voroni - Interactive" Height="532" Width="1024">
     <DockPanel Margin="0">
         <Canvas VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Height="100" Background="#FFE6E6E6" Margin="0">
 
@@ -58,6 +58,12 @@
                 </Canvas>
             </GroupBox>
 
+            <GroupBox Header="Shape" Height="100" Canvas.Left="835" Width="140">
+                <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-40,0" Width="110" HorizontalAlignment="Left">
+                    <CheckBox x:Name="cbDrawRandomShape" Content="Random Shape" IsChecked="False" Margin="4,4,0,0"/>
+                </StackPanel>
+            </GroupBox>
+            
         </Canvas>
         <Border x:Name="CanvasBorder" DockPanel.Dock="Top" Margin="0" BorderBrush="#FF1B1B1B" BorderThickness="0" >
             <Canvas x:Name="Graph" Background="White" Margin="0" />
