@@ -11,7 +11,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Edge = InteractiveDelaunayVoronoi.Edge;
 using System.Linq;
-
+using System.Diagnostics;
 
 namespace InteractiveDelaunayVoronoi
 {
@@ -39,6 +39,11 @@ namespace InteractiveDelaunayVoronoi
 
         bool mousePressedDuringMove = false;
         int movementPointIndex = -1;
+
+        System.Windows.Threading.DispatcherTimer relaxationTimer;
+        double relaxationSpeed = 1;
+        int relaxationUpdateIntervalMs = 10;
+        double stopDistance = 10; // distance to stop relaxation, otherwise we'd only get jitter
 
         Random random = new Random();
 
@@ -118,6 +123,15 @@ namespace InteractiveDelaunayVoronoi
 
             #endregion component event handlers
 
+            #region timers
+
+            relaxationTimer = new System.Windows.Threading.DispatcherTimer();
+            relaxationTimer.Tick += new EventHandler(relaxationTimer_Tick);
+            relaxationTimer.Interval = new TimeSpan(0, 0, 0, 0, relaxationUpdateIntervalMs);
+
+            UpdateRelaxationButtonStates();
+
+            #endregion timers
 
             // disable the voronoi clip drawing, it's only for testing purposes for the GetAllClippedVoronoiPolygons method
             // needs some adjustment, eg dynamically adding points doesn't work when it is activated
@@ -955,6 +969,36 @@ namespace InteractiveDelaunayVoronoi
             Vector[] clipPolygon = GetClipPolygon();
 
             graph.Relax( clipPolygon);
+
+            CreateGraph();
+        }
+
+        private void btRelaxStart_Click(object sender, RoutedEventArgs e)
+        {
+            relaxationTimer.Start();
+
+            UpdateRelaxationButtonStates();
+        }
+
+        private void btRelaxStop_Click(object sender, RoutedEventArgs e)
+        {
+            relaxationTimer.Stop();
+
+            UpdateRelaxationButtonStates();
+
+        }
+
+        private void UpdateRelaxationButtonStates()
+        {
+            btRelaxStart.IsEnabled = !relaxationTimer.IsEnabled;
+            btRelaxStop.IsEnabled = relaxationTimer.IsEnabled;
+        }
+
+        private void relaxationTimer_Tick(object sender, EventArgs e)
+        {
+            Vector[] clipPolygon = GetClipPolygon();
+
+            graph.RelaxTowardsCentroid( relaxationSpeed, clipPolygon, stopDistance);
 
             CreateGraph();
         }

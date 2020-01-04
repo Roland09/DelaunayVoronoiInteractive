@@ -262,11 +262,45 @@ namespace DelaunayVoronoi
         /// <summary>
         /// Perform Lloyd Relaxation. Move all points to the centroid of the voronoi cell
         /// </summary>
-        public void Relax(Vector[] clipPolygon)
+        public void RelaxTowardsCentroid( double speed, Vector[] clipPolygon, double stopDistance)
         {
             List<Point> allPointsList = (List<Point>)points;
 
             for( int i=0; i < allPointsList.Count; i++)
+            {
+                Point point = allPointsList[i];
+
+                Cell cell = GetVoronoiCell(point, clipPolygon);
+
+                if (cell == null)
+                    continue;
+
+                // get distance, ie magnitude
+                double distance = (cell.Centroid - cell.DelaunayPoint).Length;
+
+                // stop at a given delta, otherwise we'd only get jitters
+                if (distance < stopDistance)
+                    continue;
+
+                // get direction
+                Vector direction = cell.Centroid - cell.DelaunayPoint;
+                direction.Normalize();
+
+                Vector relaxationStepPoint = cell.DelaunayPoint + direction * speed;
+                Point relaxedPoint = new Point(relaxationStepPoint.X, relaxationStepPoint.Y);
+
+                allPointsList[i] = relaxedPoint;
+            }
+        }
+
+        /// <summary>
+        /// Perform Lloyd Relaxation. Move all points to the centroid of the voronoi cell
+        /// </summary>
+        public void Relax(Vector[] clipPolygon)
+        {
+            List<Point> allPointsList = (List<Point>)points;
+
+            for (int i = 0; i < allPointsList.Count; i++)
             {
                 Point point = allPointsList[i];
 

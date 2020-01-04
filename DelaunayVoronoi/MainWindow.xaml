@@ -79,7 +79,9 @@
 
             <GroupBox Header="Relaxation" Height="100" Canvas.Left="1015" Width="100">
                 <Canvas Canvas.Left="511" Canvas.Top="10" Margin="0,0,-2,-12">
-                    <Button x:Name="btRelax" Content="Relax" Canvas.Left="10" Canvas.Top="10" Width="65" Click="btRelax_Click"/>
+                    <Button x:Name="btRelax" Content="Relax" Canvas.Left="10" Canvas.Top="4" Width="65" Click="btRelax_Click"/>
+                    <Button x:Name="btRelaxStart" Content="Start " Canvas.Left="10" Width="65" Canvas.Top="29" Click="btRelaxStart_Click"/>
+                    <Button x:Name="btRelaxStop" Content="Stop " Canvas.Left="10" Width="65" Canvas.Top="54" Click="btRelaxStop_Click"/>
                 </Canvas>
             </GroupBox>
 
