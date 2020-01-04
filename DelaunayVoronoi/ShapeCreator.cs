@@ -11,13 +11,6 @@ namespace InteractiveDelaunayVoronoi
     {
         public static double Deg2Rad = 0.0174532924F;
 
-        public static Random random = new Random();
-
-        public static double GetRandomRange(double min, double max)
-        {
-            return random.NextDouble() * (max - min) + min;
-        }
-
         public static List<double> CreateAngleList(int angleStepCount, bool randomAngleMovement, bool randomStartAngle)
         {
             List<double> angleRadList = new List<double>();
@@ -27,7 +20,7 @@ namespace InteractiveDelaunayVoronoi
                 for (int i = 0; i < angleStepCount; i++)
                 {
 
-                    double angleRad = Deg2Rad * GetRandomRange( 0, 360);
+                    double angleRad = Deg2Rad * Utils.GetRandomRange( 0, 360);
 
                     // avoid duplicates
                     if (angleRadList.Contains(angleRad))
@@ -45,7 +38,7 @@ namespace InteractiveDelaunayVoronoi
                 double startAngle = 0;
 
                 if (randomStartAngle) {
-                    startAngle = Deg2Rad * GetRandomRange(0, 360);
+                    startAngle = Deg2Rad * Utils.GetRandomRange(0, 360);
                 }
 
                 for (int i = 0; i < angleStepCount; i++)
@@ -175,7 +168,7 @@ namespace InteractiveDelaunayVoronoi
                     if (min > max)
                         min = max;
 
-                    double moveDistance = GetRandomRange(min, max);
+                    double moveDistance = Utils.GetRandomRange(min, max);
 
                     distance = moveDistance;
 

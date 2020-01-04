@@ -43,11 +43,12 @@
                 </Canvas>
             </GroupBox>
             <GroupBox Header="New - Fixed Points" Height="100" Canvas.Left="550" Width="150">
-                <Canvas Canvas.Top="10" Margin="0,0,-2,-12" Height="70" VerticalAlignment="Top">
+                <Canvas Canvas.Top="10" Margin="0,0,-2,-2" Height="79" VerticalAlignment="Top">
 
                     <TextBox x:Name="tfPointCount" Height="23" Canvas.Left="81" TextWrapping="Wrap" Text="20" Width="47" PreviewTextInput="TfPointCount_PreviewTextInput" TextAlignment="Right" Margin="0,4,0,0"/>
                     <Label x:Name="lbPointCount" Content="Point Count" RenderTransformOrigin="0.524,0.615" Canvas.Left="4" Canvas.Top="-1" Margin="0,4,0,0"/>
                     <Button x:Name="btReset" Content="Clear &amp; Add Points" Canvas.Left="4" Canvas.Top="30" Width="124" Click="BtReset_Click"/>
+                    <Button x:Name="btAddPoints" Content="Add Points" Canvas.Left="4" Canvas.Top="55" Width="124" Click="BtAddPoints_Click"/>
 
                 </Canvas>
             </GroupBox>

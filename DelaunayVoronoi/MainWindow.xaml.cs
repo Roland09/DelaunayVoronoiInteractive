@@ -164,22 +164,29 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         private void InitGraph()
         {
-            int pointCount = initialPointCount;
-            if (!Int32.TryParse(tfPointCount.Text, out pointCount))
-            {
-                pointCount = initialPointCount;
-            }
-
-            if( pointCount  < 0)
-            {
-                pointCount = 0;
-            }
+            int pointCount = GetSelectedPointCount();
 
             // get width and height from the canvas border, canvas itself doesn't provide that information
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
             CreateGraph(pointCount, width, height);
+        }
+
+        private int GetSelectedPointCount()
+        {
+            int pointCount = initialPointCount;
+            if (!Int32.TryParse(tfPointCount.Text, out pointCount))
+            {
+                pointCount = initialPointCount;
+            }
+
+            if (pointCount < 0)
+            {
+                pointCount = 0;
+            }
+
+            return pointCount;
         }
 
  
@@ -1004,6 +1011,31 @@ namespace InteractiveDelaunayVoronoi
             graph.RelaxTowardsCentroid( relaxationSpeed, clipPolygon, stopDistance);
 
             CreateGraph();
+        }
+
+        /// <summary>
+        /// Add the number of specified random points, specified in the points textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BtAddPoints_Click(object sender, RoutedEventArgs e)
+        {
+            int pointCount = GetSelectedPointCount();
+
+            double width = CanvasBorder.ActualWidth;
+            double height = CanvasBorder.ActualHeight;
+
+            for ( int i=0; i < pointCount; i++)
+            {
+                double x = Utils.GetRandomRange(0, width);
+                double y = Utils.GetRandomRange(0, height);
+
+                graph.AddPoint( x, y);
+
+            }
+
+            CreateGraph();
+
         }
     }
 }

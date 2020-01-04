@@ -60,6 +60,7 @@
     <Compile Include="Edge.cs" />
     <Compile Include="PolygonUtils.cs" />
     <Compile Include="ShapeCreator.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="VectorUtils\ClockwiseComparerPoint.cs" />
     <Compile Include="DelaunayVoronoi\Point.cs" />
     <Compile Include="DelaunayVoronoi\Edge.cs" />
