@@ -638,6 +638,31 @@ namespace InteractiveDelaunayVoronoi
         }
 
         /// <summary>
+        /// Get a clip polygon depending on the clip at bounds settings. Either the canvas or with a margin.
+        /// </summary>
+        /// <returns></returns>
+        private Vector[] GetClipPolygon()
+        {
+            return GetClipPolygon(GetClipMargin());
+        }
+
+        /// <summary>
+        /// Get the clip margin. This is a constant if clip at margin is selected, otherwise it's 0, i. e. the canvas bounds.
+        /// </summary>
+        /// <returns></returns>
+        private double GetClipMargin()
+        {
+            if (cbClipAtBounds.IsChecked.GetValueOrDefault())
+            {
+                return clipAtBoundsMargin;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// Create a polygon which consists of the bounding box plus a margin
         /// </summary>
         /// <returns></returns>
@@ -925,6 +950,13 @@ namespace InteractiveDelaunayVoronoi
             CreateGraph();
         }
 
+        private void btRelax_Click(object sender, RoutedEventArgs e)
+        {
+            Vector[] clipPolygon = GetClipPolygon();
 
+            graph.Relax( clipPolygon);
+
+            CreateGraph();
+        }
     }
 }

@@ -206,31 +206,11 @@ namespace DelaunayVoronoi
 
             foreach (Point point in points)
             {
-                List<Vector> currentPolygon = new List<Vector>();
 
-                List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+                Cell cell = GetVoronoiCell(point, clipPolygon);
 
-                if (circumCenterPoints.Count == 0)
+                if (cell == null)
                     continue;
-
-                foreach (Point circumCenterPoint in circumCenterPoints)
-                {
-                    currentPolygon.Add(ToVector(circumCenterPoint));
-                }
-
-                Cell cell;
-
-                if (clipPolygon == null)
-                {
-                    cell = new Cell(currentPolygon.ToArray(), ToVector(point));
-                }
-                else
-                {
-                    Vector[] clippedPoints = SutherlandHodgman.GetIntersectedPolygon(currentPolygon.ToArray(), clipPolygon);
-
-                    // create the cell including polygons and center point
-                    cell = new Cell(clippedPoints, ToVector(point));
-                }
 
                 allCells.Add( cell);
             }
@@ -238,26 +218,77 @@ namespace DelaunayVoronoi
             return allCells;
         }
 
+        /// <summary>
+        /// Get the voronoi cell for the given point using the clip polygon.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="clipPolygon"></param>
+        /// <returns></returns>
+        public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
+        {
+            List<Vector> currentPolygon = new List<Vector>();
+
+            List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+
+            if (circumCenterPoints.Count == 0)
+                return null;
+
+            foreach (Point circumCenterPoint in circumCenterPoints)
+            {
+                currentPolygon.Add(ToVector(circumCenterPoint));
+            }
+
+
+            Cell cell;
+
+            if (clipPolygon == null)
+            {
+                Vector centroid = PolygonUtils.GetMeanVector(currentPolygon.ToArray());
+                cell = new Cell(currentPolygon.ToArray(), centroid, ToVector(point));
+            }
+            else
+            {
+                Vector[] clippedPoints = SutherlandHodgman.GetIntersectedPolygon(currentPolygon.ToArray(), clipPolygon);
+
+                Vector centroid = PolygonUtils.GetMeanVector(clippedPoints);
+
+                // create the cell including polygons and center point
+                cell = new Cell(clippedPoints, centroid, ToVector(point));
+            }
+
+            return cell;
+        }
+      
+        /// <summary>
+        /// Perform Lloyd Relaxation. Move all points to the centroid of the voronoi cell
+        /// </summary>
+        public void Relax(Vector[] clipPolygon)
+        {
+            List<Point> allPointsList = (List<Point>)points;
+
+            for( int i=0; i < allPointsList.Count; i++)
+            {
+                Point point = allPointsList[i];
+
+                Cell cell = GetVoronoiCell(point, clipPolygon);
+
+                if (cell == null)
+                    continue;
+
+                Point relaxedPoint = new Point(cell.Centroid.X, cell.Centroid.Y);
+
+                allPointsList[i] = relaxedPoint;
+            }
+        }
 
         /// <summary>
-        /// Get the mean vector of the specified cell
+        /// Get the mean vector for the given cell
         /// </summary>
+        /// <param name="cell"></param>
         /// <returns></returns>
         public static Vector GetMeanVector( Cell cell)
         {
-            if (cell.Vertices.Length == 0)
-                return new Vector( 0,0);
-
-            double x = 0f;
-            double y = 0f;
-
-            foreach (Vector pos in cell.Vertices)
-            {
-                x += pos.X;
-                y += pos.Y;
-            }
-
-            return new Vector(x / cell.Vertices.Length, y / cell.Vertices.Length);
+            return PolygonUtils.GetMeanVector(cell.Vertices);
         }
     }
 }

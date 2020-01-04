@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InteractiveDelaunayVoronoi"
         mc:Ignorable="d"
-        Title="Delaunay / Voroni - Interactive" Height="532" Width="1024">
+        Title="Delaunay / Voroni - Interactive" Height="532" Width="1134">
     <DockPanel Margin="0">
         <Canvas VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Height="100" Background="#FFE6E6E6" Margin="0">
 
@@ -61,7 +61,7 @@
             <GroupBox Header="Shape" Height="100" Canvas.Left="835" Width="180">
                 <StackPanel Height="85" VerticalAlignment="Top" Margin="0,0,-2,-8" Width="160" HorizontalAlignment="Left">
                     <CheckBox x:Name="cbDrawRandomShape" Content="Random Shape" IsChecked="False" Margin="4,4,0,0"/>
-                    
+
                     <DockPanel VerticalAlignment="Center" Margin="0">
                         <Label DockPanel.Dock="Left" HorizontalAlignment="Left">Steps</Label>
                         <TextBox Text="{Binding ElementName=sldrResampling, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="20" HorizontalAlignment="Right" />
@@ -75,6 +75,12 @@
                     </DockPanel>
 
                 </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Relaxation" Height="100" Canvas.Left="1015" Width="100">
+                <Canvas Canvas.Left="511" Canvas.Top="10" Margin="0,0,-2,-12">
+                    <Button x:Name="btRelax" Content="Relax" Canvas.Left="10" Canvas.Top="10" Width="65" Click="btRelax_Click"/>
+                </Canvas>
             </GroupBox>
 
         </Canvas>

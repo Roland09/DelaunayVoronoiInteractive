@@ -15,12 +15,18 @@ namespace InteractiveDelaunayVoronoi
         /// <summary>
         /// The center point around which the vertices are distributed
         /// </summary>
-        public Vector Center { get; }
+        public Vector Centroid { get; }
+        
+        /// <summary>
+        /// The point that was used for the Delaunay Triangulation
+        /// </summary>
+        public Vector DelaunayPoint { get; }
 
-        public Cell(Vector[] vertices, Vector center)
+        public Cell(Vector[] vertices, Vector centroid, Vector delaunayPoint)
         {
             Vertices = vertices;
-            Center = center;
+            Centroid = centroid;
+            DelaunayPoint = delaunayPoint;
         }
     }
 }
