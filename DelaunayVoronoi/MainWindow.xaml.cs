@@ -265,69 +265,92 @@ namespace InteractiveDelaunayVoronoi
         /// <param name="pattern"></param>
         private void AddPoints(FillPattern pattern)
         {
+            double margin = 80;
+            double width = CanvasBorder.ActualWidth - margin;
+            double height = CanvasBorder.ActualHeight - margin;
+            double centerX = width / 2;
+            double centerY = height / 2;
+
             switch (pattern)
             {
                 case FillPattern.Horizontal:
 
-                    for (int i = 0; i < 20; i++)
+                    int horizontalCount = 30;
+                    double offsetX = width / horizontalCount;
+
+                    for (int i = 0; i < horizontalCount; i++)
                     {
-                        graph.AddPoint(100 + i * 30, 100);
+                        graph.AddPoint(margin + i * offsetX, centerY);
                     }
                     break;
 
                 case FillPattern.Vertical:
 
-                    for (int i = 0; i < 20; i++)
+                    int verticalCount = 30;
+                    double offsetY = width / verticalCount;
+
+                    for (int i = 0; i < verticalCount; i++)
                     {
-                        graph.AddPoint(100, 100 + i * 30);
+                        graph.AddPoint(centerX, margin + i * offsetY);
 
                     }
                     break;
 
                 case FillPattern.Diagonal:
-                    for (int i = 0; i < 20; i++)
+
+                    int diagonalCount = 30;
+                    double diagonalOffsetX = width / diagonalCount;
+                    double diagonalOffsetY = width / diagonalCount;
+
+                    for (int i = 0; i < diagonalCount; i++)
                     {
-                        graph.AddPoint(100 + i * 30, 100 + i * 30);
+                        graph.AddPoint(margin + i * diagonalOffsetX, margin + i * diagonalOffsetY);
                     }
                     break;
 
                 case FillPattern.Cross:
 
-                    graph.AddPoint(200, 100);
-                    graph.AddPoint(200, 200);
-                    graph.AddPoint(200, 300);
-                    graph.AddPoint(100, 200);
-                    graph.AddPoint(300, 200);
+                    // whatever is smaller, width or height, take a third of it
+                    double crossOffset = Math.Min(width, height) / 3;
+
+                    graph.AddPoint(centerX - crossOffset, centerY);
+                    graph.AddPoint(centerX + crossOffset, centerY);
+                    graph.AddPoint(centerX, centerY);
+                    graph.AddPoint(centerX, centerY - crossOffset);
+                    graph.AddPoint(centerX, centerY + crossOffset);
 
                     break;
 
                 case FillPattern.Circle:
 
+                    // whatever is smaller, width or height, take a third of it
+                    double circleRadius = Math.Min(width, height) / 3;
+
                     int angleStepCircle = 30;
 
                     for (int i = 0; i < 360; i += angleStepCircle)
                     {
-                        float radius = 120f;
-                        int x = (int)(Math.Cos(Math.PI / 180 * i) * radius);
-                        int y = (int)(Math.Sin(Math.PI / 180 * i) * radius);
+                        int x = (int)(Math.Cos(Math.PI / 180 * i) * circleRadius);
+                        int y = (int)(Math.Sin(Math.PI / 180 * i) * circleRadius);
 
-                        graph.AddPoint(400 + x, 150 + y);
+                        graph.AddPoint(centerX + x, centerY + y);
                                             }
                     break;
 
                 case FillPattern.Ellipse:
 
+                    double ellipseRadiusX = width / 3;
+                    double ellipseRadiusY = height / 3;
+
                     int angleStepEllipse = 20;
 
                     for (int i = 0; i < 360; i += angleStepEllipse)
                     {
-                        float radiusX = 180f;
-                        float radiusY = 100;
 
-                        int x = (int)(Math.Cos(Math.PI / 180 * i) * radiusX);
-                        int y = (int)(Math.Sin(Math.PI / 180 * i) * radiusY);
+                        int x = (int)(Math.Cos(Math.PI / 180 * i) * ellipseRadiusX);
+                        int y = (int)(Math.Sin(Math.PI / 180 * i) * ellipseRadiusY);
 
-                        graph.AddPoint( 400 + x, 200 + y);
+                        graph.AddPoint( centerX + x, centerY + y);
                     }
                     break;
             }
