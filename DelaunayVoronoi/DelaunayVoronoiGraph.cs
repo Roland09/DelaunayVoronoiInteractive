@@ -1,4 +1,5 @@
-﻿using InteractiveDelaunayVoronoi;
+﻿using Delaunay.VectorUtils;
+using InteractiveDelaunayVoronoi;
 using SutherlandHodgmanAlgorithm;
 using System;
 using System.Collections.Generic;
@@ -93,30 +94,35 @@ namespace DelaunayVoronoi
             return ToVectors(this.points);
         }
 
-        private List<Point> GetCircumCenterPoints(Point point)
+        private List<Vector> GetCircumCenterVectors(Point point)
         {
-            List<Point> circumCenterPoints = new List<Point>();
+            // use a set to avoid duplicates
+            HashSet<Vector> circumCenterSet = new HashSet<Vector>();
 
             foreach (Triangle triangle in point.AdjacentTriangles)
             {
                 Point circumCenterPoint = new Point(triangle.Circumcenter.X, triangle.Circumcenter.Y);
-                circumCenterPoints.Add(circumCenterPoint);
+                circumCenterSet.Add( ToVector(circumCenterPoint));
 
             }
 
-            // ensure the points are in clockwise order
-            circumCenterPoints.Sort(new ClockwiseComparerPoint(point));
+            // convert to lsit
+            List<Vector> circumCenterList = new List<Vector>();
+            circumCenterList.AddRange(circumCenterSet);
 
-            return circumCenterPoints;
+            // ensure the points are in clockwise order
+            circumCenterList.Sort(new ClockwiseComparerVector(circumCenterList));
+
+            return circumCenterList;
         }
 
         public List<Vector> GetCircumCenterPoints(int index)
         {
             Point point = ((List<Point>)points)[index];
 
-            List<Point> circumCenterPoints = GetCircumCenterPoints(point);
+            List<Vector> circumCenterPoints = GetCircumCenterVectors(point);
 
-            return ToVectors( circumCenterPoints);
+            return circumCenterPoints;
         }
 
         public List<Vector> GetCircumCenterPoints()
@@ -171,14 +177,8 @@ namespace DelaunayVoronoi
 
             foreach ( Point point in points)
             {
-                List<Vector> currentPolygon = new List<Vector>();
-
-                List<Point> circumCenterPoints = GetCircumCenterPoints(point);
-                foreach (Point circumCenterPoint in circumCenterPoints)
-                {
-                    currentPolygon.Add(ToVector(circumCenterPoint));
-                }
-
+                List<Vector> currentPolygon = GetCircumCenterVectors(point);
+                
                 allPolygons.Add(currentPolygon.ToArray());
             }
 
@@ -226,18 +226,10 @@ namespace DelaunayVoronoi
         /// <returns></returns>
         public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
         {
-            List<Vector> currentPolygon = new List<Vector>();
+            List<Vector> currentPolygon = GetCircumCenterVectors(point);
 
-            List<Point> circumCenterPoints = GetCircumCenterPoints(point);
-
-            if (circumCenterPoints.Count == 0)
+            if (currentPolygon.Count == 0)
                 return null;
-
-            foreach (Point circumCenterPoint in circumCenterPoints)
-            {
-                currentPolygon.Add(ToVector(circumCenterPoint));
-            }
-
 
             Cell cell;
 

@@ -608,6 +608,9 @@ namespace InteractiveDelaunayVoronoi
             {
                 List<Vector> circumCenterPoints = graph.GetCircumCenterPoints( i);
 
+                if (circumCenterPoints.Count < 3)
+                    continue;
+
                 // fill polygon
                 Color color = GetRandomColor(i);
 
