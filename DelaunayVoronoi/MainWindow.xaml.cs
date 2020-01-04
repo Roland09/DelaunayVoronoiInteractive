@@ -43,7 +43,7 @@ namespace InteractiveDelaunayVoronoi
         System.Windows.Threading.DispatcherTimer relaxationTimer;
         double relaxationSpeed = 1;
         int relaxationUpdateIntervalMs = 10;
-        double stopDistance = 10; // distance to stop relaxation, otherwise we'd only get jitter
+        double stopDistance = 2; // distance to stop relaxation, otherwise we'd only get jitter
 
         Random random = new Random();
 
