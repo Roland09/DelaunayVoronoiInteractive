@@ -66,7 +66,7 @@
                     <DockPanel VerticalAlignment="Center" Margin="0">
                         <Label DockPanel.Dock="Left" HorizontalAlignment="Left">Steps</Label>
                         <TextBox Text="{Binding ElementName=sldrResampling, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="20" HorizontalAlignment="Right" />
-                        <Slider x:Name="sldrResampling" Margin="4,4,0,0" Maximum="60" SmallChange="1" TickFrequency="5" Value="10" LargeChange="5" Minimum="3"/>
+                        <Slider x:Name="sldrResampling" Margin="4,4,0,0" Maximum="100" SmallChange="1" TickFrequency="5" Value="10" LargeChange="5" Minimum="3"/>
                     </DockPanel>
 
                     <DockPanel VerticalAlignment="Center" Margin="0">

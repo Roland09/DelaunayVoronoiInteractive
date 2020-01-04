@@ -35,7 +35,19 @@ namespace DelaunayVoronoi
 
         public void AddPoint(double x, double y)
         {
+            AddPoint(x, y, true);
+        }
+        
+        public void AddPoint(double x, double y, bool ignoreDuplicates)
+        {
             Point point = new Point(x, y);
+
+            // don't allow duplicates, they'll cause problems
+            if (ignoreDuplicates)
+            {
+                if (((List<Point>)points).Contains(point))
+                    return;
+            }
 
             // add new point to points list
             ((List<Point>)points).Add(point);

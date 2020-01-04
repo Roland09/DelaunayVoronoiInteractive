@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -79,7 +80,10 @@ namespace SutherlandHodgmanAlgorithm
                             Vector? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
                             if (point == null)
                             {
-                                throw new ApplicationException("Line segments don't intersect");		//	may be colinear, or may be a bug
+                                // removed this: we don't want the app to crash
+                                // throw new ApplicationException("Line segments don't intersect");        //	may be colinear, or may be a bug
+                                Debug.Print("Line segments don't intersect");
+
                             }
                             else
                             {
@@ -94,7 +98,9 @@ namespace SutherlandHodgmanAlgorithm
                         Vector? point = GetIntersect(S, E, clipEdge.From, clipEdge.To);
                         if (point == null)
                         {
-                            throw new ApplicationException("Line segments don't intersect");		//	may be colinear, or may be a bug
+                            // removed this: we don't want the app to crash
+                            //throw new ApplicationException("Line segments don't intersect");		//	may be colinear, or may be a bug
+                            Debug.Print("Line segments don't intersect");
                         }
                         else
                         {

@@ -25,6 +25,31 @@ namespace DelaunayVoronoi
         {
             return new Point(p1.X - p2.X, p1.Y - p2.Y);
         }
+
+        /// <summary>
+        /// Overwritten to check for duplicates
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return obj is Point point &&
+                   X == point.X &&
+                   Y == point.Y;
+        }
+
+        /// <summary>
+        /// Overwritten to check for duplicates
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            var hashCode = 1861411795;
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            return hashCode;
+        }
     }
 
     public class BorderPoint : Point
@@ -35,4 +60,6 @@ namespace DelaunayVoronoi
         {
         }
     }
+
+
 }

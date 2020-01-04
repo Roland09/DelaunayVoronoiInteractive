@@ -234,8 +234,8 @@ namespace InteractiveDelaunayVoronoi
                     // don't let the event be handled in the MouseLeftButtonDownHandler as well
                     e.Handled = true;
 
-                    // add point at clicked position
-                    graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y);
+                    // add point at clicked position; allow duplicates in mouse move event handler because the continuously updated one would overlap this created one; ie we couldn't add new points otherwise
+                    graph.AddPoint(e.GetPosition(Graph).X, e.GetPosition(Graph).Y, false);
 
                     CreateGraph();
 
@@ -624,7 +624,7 @@ namespace InteractiveDelaunayVoronoi
             // fill polygon
             Color color = GetRandomColor(movementPointIndex);
 
-            DrawPolygon(circumCenterPoints, color);
+            DrawPolygon(circumCenterPoints, null, color);
 
         }
 
@@ -644,7 +644,7 @@ namespace InteractiveDelaunayVoronoi
                 // fill polygon
                 Color color = GetRandomColor(i);
 
-                DrawPolygon(circumCenterPoints, color);
+                DrawPolygon(circumCenterPoints, null, color);
 
             }
 
@@ -681,7 +681,7 @@ namespace InteractiveDelaunayVoronoi
 
             List<Vector> shape = ShapeCreator.CreateRandomShape(cell.Vertices.ToList<Vector>(), ellipseRelaxationFactor, angleStepCount, randomAngleMovement, keepOriginalShape, randomStartAngle);
 
-            DrawPolygon(shape, Colors.LawnGreen);
+            DrawPolygon(shape, Colors.DarkGreen, Colors.LawnGreen);
         }
 
         /// <summary>
@@ -819,8 +819,9 @@ namespace InteractiveDelaunayVoronoi
         /// Draw the polygon of the given points using the given color
         /// </summary>
         /// <param name="circumCenterPoints"></param>
-        /// <param name="color"></param>
-        private void DrawPolygon(List<Vector> circumCenterPoints, Color color)
+        /// <param name="strokeColor"></param>
+        /// <param name="fillColor"></param>
+        private void DrawPolygon(List<Vector> circumCenterPoints, Color? strokeColor, Color fillColor)
         {
             // convert to System.Windows.Point array
             Vector[] currentPolygon = circumCenterPoints.ToArray();
@@ -845,14 +846,15 @@ namespace InteractiveDelaunayVoronoi
                 pointCollection.Add( new System.Windows.Point( point.X, point.Y));
             }
 
-            SolidColorBrush strokeBrush = new SolidColorBrush(color);
-            SolidColorBrush fillBrush = new SolidColorBrush(color);
+            SolidColorBrush strokeBrush = strokeColor == null ? null : new SolidColorBrush((Color) strokeColor);
+            SolidColorBrush fillBrush = fillColor == null ? null : new SolidColorBrush(fillColor);
             fillBrush.Opacity = 0.4f;
 
             var polygon = new Polygon
             {
                 //Stroke = strokeBrush,
                 Fill = fillBrush,
+                Stroke = strokeBrush,
                 StrokeThickness = 2,
                 Points = pointCollection
             };
