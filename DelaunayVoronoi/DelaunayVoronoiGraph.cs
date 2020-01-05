@@ -142,7 +142,7 @@ namespace DelaunayVoronoi
             return triangulation.Select(item => ToVector( item.Circumcenter)).ToList();
         }
 
-        public Vector GetPoint( int index)
+        public Vector GetVector( int index)
         {
             Point point = ((List<Point>)points)[index];
 
@@ -236,7 +236,19 @@ namespace DelaunayVoronoi
         /// <param name="point"></param>
         /// <param name="clipPolygon"></param>
         /// <returns></returns>
-        public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
+        public Cell GetVoronoiCell( int index, Vector[] clipPolygon)
+        {
+            Point point = ((List<Point>)points)[index];
+            return GetVoronoiCell(point, clipPolygon);
+        }
+
+        /// <summary>
+        /// Get the voronoi cell for the given point using the clip polygon.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="clipPolygon"></param>
+        /// <returns></returns>
+            public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
         {
             List<Vector> currentPolygon = GetCircumCenterVectors(point);
 

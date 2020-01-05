@@ -88,6 +88,30 @@ namespace InteractiveDelaunayVoronoi
 
             return true;
         }
+
+        /// <summary>
+        /// Check if a point is inside, outside or on an ellipse
+        /// inside = < 1, on = 1, outside = > 1
+        /// For ON comparison better cast to int.
+        /// https://www.geeksforgeeks.org/check-if-a-point-is-inside-outside-or-on-the-ellipse/
+        /// </summary>
+        /// <param name="ellipseX"></param>
+        /// <param name="ellipseY"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="ellipseWidth"></param>
+        /// <param name="ellipseHeight"></param>
+        /// <returns></returns>        
+        public static double IsInEllipse(double ellipseX, double ellipseY, double ellipseWidth, double ellipseHeight, double x, double y)
+        {
+
+            double p = (Math.Pow((x - ellipseX), 2) /
+                     Math.Pow(ellipseWidth, 2)) +
+                    (Math.Pow((y - ellipseY), 2) /
+                     Math.Pow(ellipseHeight, 2));
+
+            return p;
+        }
     }
 
 }

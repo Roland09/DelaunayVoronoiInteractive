@@ -152,6 +152,9 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         private void ClearGraph()
         {
+            // reset the color map
+            colorMap.Clear();
+
             // get width and height from the canvas border, canvas itself doesn't provide that information
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
@@ -164,6 +167,9 @@ namespace InteractiveDelaunayVoronoi
         /// </summary>
         private void InitGraph()
         {
+            // reset the color map
+            colorMap.Clear();
+
             int pointCount = GetSelectedPointCount();
 
             // get width and height from the canvas border, canvas itself doesn't provide that information
@@ -608,7 +614,7 @@ namespace InteractiveDelaunayVoronoi
             if (movementPointIndex < 0 || movementPointIndex != graph.GetLastPointIndex())
                 return;
 
-            Vector point = graph.GetPoint(movementPointIndex);
+            Vector point = graph.GetVector(movementPointIndex);
             List<Vector> circumCenterPoints = graph.GetCircumCenterPoints(movementPointIndex);
 
             foreach (Vector circumCenterPoint in circumCenterPoints)
@@ -1062,5 +1068,80 @@ namespace InteractiveDelaunayVoronoi
             CreateGraph();
 
         }
+
+        /// <summary>
+        /// Create a random ellipse and paint all voronoi cells in the same color which have the the centroid inside the ellipse
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btTest_Click(object sender, RoutedEventArgs e)
+        {
+            double width = CanvasBorder.ActualWidth;
+            double height = CanvasBorder.ActualHeight;
+
+            double positionMargin = 0;
+
+            double x = Utils.GetRandomRange(positionMargin, width - positionMargin);
+            double y = Utils.GetRandomRange(positionMargin, height - positionMargin);
+
+            Vector position = new Vector(x, y);
+
+            double ellipseWidthMin = 50;
+            double ellipseHeightMin = 50;
+            double ellipseWidthMax = 200;
+            double ellipseHeightMax = 200;
+
+            double ellipseWidth = Utils.GetRandomRange(ellipseWidthMin, ellipseWidthMax);
+            double ellipseHeight = Utils.GetRandomRange(ellipseHeightMin, ellipseHeightMax);
+
+            // ellipse x/y (and check if point is in ellipse) spans the entire canvas
+            var ellipseX = position.X;
+            var ellipseY = position.Y;
+
+            // check if point is inside ellipse
+
+            Vector[] clipPolygon = GetClipPolygon();
+
+            for (int i = 0; i < graph.GetPoints().Count; i++)
+            {
+
+                Cell cell = graph.GetVoronoiCell( i, clipPolygon);
+
+                Vector compareVector = cell.Centroid;
+
+
+                double checkEllipse = PolygonUtils.IsInEllipse(ellipseX , ellipseY, ellipseWidth / 2, ellipseHeight / 2, compareVector.X, compareVector.Y);
+
+                if(checkEllipse < 1)
+                {
+                    colorMap[i] = Colors.Black;
+                }
+            }
+
+            CreateGraph();
+            
+            // draw ellipse
+            SolidColorBrush brush = new SolidColorBrush(Colors.Black);
+
+            // create ellipse
+            var ellipse = new Ellipse
+            {
+                Stroke = brush,
+                StrokeThickness = 2,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Width = ellipseWidth,
+                Height = ellipseHeight
+            };
+
+            var ellipseDrawX = ellipseX - 0.5 * ellipseWidth;
+            var ellipseDrawY = ellipseY - 0.5 * ellipseHeight;
+            ellipse.Margin = new Thickness(ellipseDrawX, ellipseDrawY, 0, 0);
+
+            Graph.Children.Add(ellipse);
+            
+        }
+
+
     }
 }
