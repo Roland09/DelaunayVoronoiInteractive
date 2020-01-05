@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:InteractiveDelaunayVoronoi"
         mc:Ignorable="d"
-        Title="Delaunay / Voroni - Interactive" Height="532" Width="1134">
+        Title="Delaunay / Voroni - Interactive" Height="720" Width="1280">
     <DockPanel Margin="0">
         <Canvas VerticalAlignment="Bottom" DockPanel.Dock="Bottom" Height="100" Background="#FFE6E6E6" Margin="0">
 
@@ -40,8 +40,6 @@
             <GroupBox Header="New - Empty" Height="100" Canvas.Left="450" Width="100">
                 <Canvas Canvas.Left="511" Canvas.Top="10" Margin="0,0,-2,-12">
                     <Button x:Name="btClear" Content="Clear" Click="BtClear_Click" Canvas.Left="10" Canvas.Top="29" Width="65"/>
-                    <Button x:Name="btTest" Content="Test Ellipse" Canvas.Left="10" Canvas.Top="54" Width="65" Click="btTest_Click"/>
-
                 </Canvas>
             </GroupBox>
             <GroupBox Header="New - Fixed Points" Height="100" Canvas.Left="550" Width="150">
@@ -88,6 +86,12 @@
                 </Canvas>
             </GroupBox>
 
+            <GroupBox Header="Colorization" Height="100" Canvas.Left="1115" Width="100">
+                <Canvas Canvas.Left="511" Canvas.Top="10" Margin="0,0,-2,-12">
+                    <Button x:Name="btTestEllipse" Content="Ellipse" Canvas.Left="10" Canvas.Top="4" Width="65" Click="Testing_ColorizeVoronoiWithinRandomEllipseBounds"/>
+                    <Button x:Name="btTestNeighbours" Content="Neighbours" Canvas.Left="10" Canvas.Top="29" Width="65" Click="btTestNeighbours_Click"/>
+                </Canvas>
+            </GroupBox>
         </Canvas>
         <Border x:Name="CanvasBorder" DockPanel.Dock="Top" Margin="0" BorderBrush="#FF1B1B1B" BorderThickness="0" >
             <Canvas x:Name="Graph" Background="White" Margin="0" />

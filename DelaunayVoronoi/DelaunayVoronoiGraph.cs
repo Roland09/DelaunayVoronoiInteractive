@@ -101,7 +101,11 @@ namespace DelaunayVoronoi
             voronoiTimer.Stop();
         }
 
-        public List<Vector> GetPoints()
+        /// <summary>
+        /// Get all delaunay points as vectors.
+        /// </summary>
+        /// <returns></returns>
+        public List<Vector> GetAllVectors()
         {
             return ToVectors(this.points);
         }
@@ -197,6 +201,30 @@ namespace DelaunayVoronoi
             return allPolygons;
         }
 
+        public Dictionary<int,Cell> GetAllVoronoiCellsMap(Vector[] clipPolygon)
+        {
+            List<Point> allPointsList = (List<Point>)points;
+
+            Dictionary<int, Cell> map = new Dictionary<int, Cell>();
+
+            for( int i=0; i < allPointsList.Count; i++) 
+            {
+                Point point = allPointsList[i];
+
+                Cell cell = GetVoronoiCell(point, clipPolygon);
+
+                // cell can be null
+                if (cell == null)
+                {
+                    Debug.Print( "Cell is null for point index " + i);
+                }
+
+                map.Add(i, cell);
+
+            }
+
+            return map;
+        }
 
         /// <summary>
         /// Get a list of all polygons per point. This contains duplicate edges if multiple points share the same edge.
@@ -248,7 +276,7 @@ namespace DelaunayVoronoi
         /// <param name="point"></param>
         /// <param name="clipPolygon"></param>
         /// <returns></returns>
-            public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
+        public Cell GetVoronoiCell( Point point, Vector[] clipPolygon)
         {
             List<Vector> currentPolygon = GetCircumCenterVectors(point);
 
@@ -339,6 +367,80 @@ namespace DelaunayVoronoi
         public static Vector GetMeanVector( Cell cell)
         {
             return PolygonUtils.GetMeanVector(cell.Vertices);
+        }
+
+        public Dictionary<int,List<Cell>> GetAllNeighbours(Vector[] clipPolygon)
+        {
+            List<Point> allPointsList = (List<Point>)points;
+
+            // create a map and initialize it with an empty list
+            Dictionary<int, List<Cell>> neighbourMap = new Dictionary<int, List<Cell>>();
+
+            for( int i=0; i < allPointsList.Count; i++) 
+            {
+                neighbourMap.Add(i, new List<Cell>());
+            }
+
+            Dictionary<int, Cell> cellMap = GetAllVoronoiCellsMap(clipPolygon);
+
+            for (int i = 0; i < allPointsList.Count; i++)
+            {
+                Cell currentCell = cellMap[i];
+
+                if (currentCell == null)
+                    continue;
+
+                for (int j = 0; j < allPointsList.Count; j++)
+                {
+                    // skip self
+                    if (i == j)
+                        continue;
+
+                    Cell otherCell = cellMap[j];
+
+                    if (otherCell == null)
+                        continue;
+
+                    int sharedVertexCount = 0;
+
+                    foreach (Vector currentVector in currentCell.Vertices)
+                    {
+                        foreach (Vector otherVector in otherCell.Vertices)
+                        {
+                            if (currentVector == otherVector)
+                            {
+                                sharedVertexCount++;
+                            }
+                        }
+                    }
+
+                    if (sharedVertexCount > 1)
+                    {
+                        neighbourMap[i].Add(otherCell);
+                    }
+                }
+            }
+
+            return neighbourMap;
+        }
+       
+        /// <summary>
+        /// Get the point index for a given cell.
+        /// TODO: store the index directly in the cell. Currently needed it only for testing
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        public int GetPointIndex( Cell cell)
+        {
+            List<Vector> allPointsList = ToVectors( points);
+
+            for( int i=0; i < allPointsList.Count; i++)
+            {
+                if (allPointsList[i].X == cell.DelaunayPoint.X && allPointsList[i].Y == cell.DelaunayPoint.Y)
+                    return i;
+            }
+
+            return -1;
         }
     }
 }

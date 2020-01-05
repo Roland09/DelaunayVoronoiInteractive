@@ -394,7 +394,7 @@ namespace InteractiveDelaunayVoronoi
 
             if (cbDrawPoints.IsChecked.GetValueOrDefault())
             {
-                DrawPoints( graph.GetPoints());
+                DrawPoints( graph.GetAllVectors());
 
             }
 
@@ -640,7 +640,7 @@ namespace InteractiveDelaunayVoronoi
         private void DrawVoronoiFillAll()
         {
 
-            for( int i=0; i < graph.GetPoints().Count; i++)
+            for( int i=0; i < graph.GetAllVectors().Count; i++)
             {
                 List<Vector> circumCenterPoints = graph.GetCircumCenterPoints( i);
 
@@ -1070,12 +1070,91 @@ namespace InteractiveDelaunayVoronoi
         }
 
         /// <summary>
+        /// Pick a random cell and its neighbours and colorize them. Do this multiple times, randomly on those selected neighbours.
+        /// </summary>
+        private void btTestNeighbours_Click(object sender, RoutedEventArgs e)
+        {
+            // number of segment creation steps for the entire canvas
+            int canvasLoopCount = 30;
+
+            // minimum number of random neighbour searches
+            int neighbourLoopCountMin = 3;
+            // maximum number of random neighbour searches
+            int neighbourLoopCountMax = 80;
+
+            for (int canvasLoop = 0; canvasLoop < canvasLoopCount; canvasLoop++)
+            {
+
+                Dictionary<int, List<Cell>> allNeighboursMap = graph.GetAllNeighbours(GetClipPolygon());
+                List<Vector> allVectors = graph.GetAllVectors();
+
+                HashSet<int> allIndexes = new HashSet<int>();
+                for (int i = 0; i < allVectors.Count; i++)
+                {
+                    allIndexes.Add(i);
+                }
+
+                if (allIndexes.Count == 0)
+                    return;
+
+                int randomIndex = random.Next(allIndexes.Count);
+
+                // loop for the given number of times for connected neighbours
+                int neighbourLoopCount = random.Next(neighbourLoopCountMin, neighbourLoopCountMax);
+                
+                for (int neighbourLoop = 0; neighbourLoop < neighbourLoopCount; neighbourLoop++)
+                {
+                    bool removeSuccess = allIndexes.Remove(randomIndex);
+                    if (!removeSuccess)
+                        continue;
+
+                    Color color = GetRandomColor();
+
+                    colorMap[randomIndex] = color;
+
+                    List<Cell> neighbourCells = allNeighboursMap[randomIndex];
+
+                    foreach (Cell cell in neighbourCells)
+                    {
+                        int neighbourIndex = graph.GetPointIndex(cell);
+
+                        if (neighbourIndex == -1)
+                            continue;
+
+                        removeSuccess = allIndexes.Remove(neighbourIndex);
+                        if (!removeSuccess)
+                            continue;
+
+                        colorMap[neighbourIndex] = color;
+
+                        if (neighbourLoop == 0)
+                        {
+                            randomIndex = neighbourIndex;
+                        }
+                        else if (random.NextDouble() < 0.5)
+                        {
+                            randomIndex = neighbourIndex;
+                        }
+
+                    }
+                }
+            }
+            CreateGraph();
+        }
+
+        /// <summary>
         /// Create a random ellipse and paint all voronoi cells in the same color which have the the centroid inside the ellipse
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btTest_Click(object sender, RoutedEventArgs e)
+        /// <param name="e"></param> 
+        private void Testing_ColorizeVoronoiWithinRandomEllipseBounds(object sender, RoutedEventArgs e)
         {
+            // parameters
+            double ellipseWidthMin = 50;
+            double ellipseHeightMin = 50;
+            double ellipseWidthMax = 200;
+            double ellipseHeightMax = 200;
+
             double width = CanvasBorder.ActualWidth;
             double height = CanvasBorder.ActualHeight;
 
@@ -1085,11 +1164,6 @@ namespace InteractiveDelaunayVoronoi
             double y = Utils.GetRandomRange(positionMargin, height - positionMargin);
 
             Vector position = new Vector(x, y);
-
-            double ellipseWidthMin = 50;
-            double ellipseHeightMin = 50;
-            double ellipseWidthMax = 200;
-            double ellipseHeightMax = 200;
 
             double ellipseWidth = Utils.GetRandomRange(ellipseWidthMin, ellipseWidthMax);
             double ellipseHeight = Utils.GetRandomRange(ellipseHeightMin, ellipseHeightMax);
@@ -1102,24 +1176,24 @@ namespace InteractiveDelaunayVoronoi
 
             Vector[] clipPolygon = GetClipPolygon();
 
-            for (int i = 0; i < graph.GetPoints().Count; i++)
+            for (int i = 0; i < graph.GetAllVectors().Count; i++)
             {
 
-                Cell cell = graph.GetVoronoiCell( i, clipPolygon);
+                Cell cell = graph.GetVoronoiCell(i, clipPolygon);
 
                 Vector compareVector = cell.Centroid;
 
 
-                double checkEllipse = PolygonUtils.IsInEllipse(ellipseX , ellipseY, ellipseWidth / 2, ellipseHeight / 2, compareVector.X, compareVector.Y);
+                double checkEllipse = PolygonUtils.IsInEllipse(ellipseX, ellipseY, ellipseWidth / 2, ellipseHeight / 2, compareVector.X, compareVector.Y);
 
-                if(checkEllipse < 1)
+                if (checkEllipse < 1)
                 {
                     colorMap[i] = Colors.Black;
                 }
             }
 
             CreateGraph();
-            
+
             // draw ellipse
             SolidColorBrush brush = new SolidColorBrush(Colors.Black);
 
@@ -1139,7 +1213,6 @@ namespace InteractiveDelaunayVoronoi
             ellipse.Margin = new Thickness(ellipseDrawX, ellipseDrawY, 0, 0);
 
             Graph.Children.Add(ellipse);
-            
         }
 
 
